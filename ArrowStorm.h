@@ -3,8 +3,11 @@ class ArrowStorm
 {
 
 public:
-	void Run();
-	void Initialize();
+	ArrowStorm();
+	~ArrowStorm();
+
+	void Init();
 	bool Load();
+	void Run();
 };
 

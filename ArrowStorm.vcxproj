@@ -127,10 +127,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ArrowStorm.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArrowStorm.h" />
     <ClInclude Include="DrawManager.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="Mecro.h" />

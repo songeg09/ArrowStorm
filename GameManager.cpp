@@ -21,12 +21,12 @@ void GameManager::RunGame()
 	{
 		system("cls");
 		DrawLobby();
-		std::cin >> Choice;
+		GetSafeInput(Choice);
 
 		switch ((LOBBY_CHOICE)Choice)
 		{
 		case LOBBY_CHOICE::NEW_GAME:
-			m_ArrowStorm.Initialize();
+			m_ArrowStorm.Init();
 			m_ArrowStorm.Run();
 			break;
 		case LOBBY_CHOICE::CONTINUE:
@@ -36,7 +36,7 @@ void GameManager::RunGame()
 			}
 			else
 			{
-
+				DrawManager::DrawConfirmPopup("No Save Data Found");
 			}
 			break;
 		case LOBBY_CHOICE::QUIT:
@@ -50,9 +50,18 @@ void GameManager::RunGame()
 
 void GameManager::DrawLobby()
 {
-	DrawManager::DrawMidText("A r r o w  S t o r m", ASPECT_RATIO::WIDTH, ASPECT_RATIO::HEIGHT * 0.3f);
-	DrawManager::DrawMidText("1.New Game ", ASPECT_RATIO::WIDTH, ASPECT_RATIO::HEIGHT * 0.4f);
-	DrawManager::DrawMidText("2.Continue ", ASPECT_RATIO::WIDTH, ASPECT_RATIO::HEIGHT * 0.5f);
-	DrawManager::DrawMidText("3.Quit     ", ASPECT_RATIO::WIDTH, ASPECT_RATIO::HEIGHT * 0.6f);
-	DrawManager::DrawMidText("Select :   ", ASPECT_RATIO::WIDTH, ASPECT_RATIO::HEIGHT * 0.7f);
+	DrawManager::DrawEdges(ASPECT_RATIO::SCREEN_WIDTH, ASPECT_RATIO::SCREEN_HEIGHT, "#");
+	DrawChoices();
 }
+
+void GameManager::DrawChoices()
+{
+	DrawManager::DrawMidText("A r r o w  S t o r m", ASPECT_RATIO::SCREEN_WIDTH, ASPECT_RATIO::SCREEN_HEIGHT * 0.3f);
+	DrawManager::DrawMidText("1.New Game ", ASPECT_RATIO::SCREEN_WIDTH, ASPECT_RATIO::SCREEN_HEIGHT * 0.4f);
+	DrawManager::DrawMidText("2.Continue ", ASPECT_RATIO::SCREEN_WIDTH, ASPECT_RATIO::SCREEN_HEIGHT * 0.5f);
+	DrawManager::DrawMidText("3.Quit     ", ASPECT_RATIO::SCREEN_WIDTH, ASPECT_RATIO::SCREEN_HEIGHT * 0.6f);
+	DrawManager::DrawMidText("Select :   ", ASPECT_RATIO::SCREEN_WIDTH, ASPECT_RATIO::SCREEN_HEIGHT * 0.7f);
+}
+
+
+

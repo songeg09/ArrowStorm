@@ -20,5 +20,8 @@ private:
 	ArrowStorm m_ArrowStorm;
 
 	void DrawLobby();
+	void DrawChoices();
+
+	void DrawErrorPopUp();
 };
 
