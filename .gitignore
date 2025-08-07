@@ -396,5 +396,3 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-ArrowStorm.vcxproj
-ArrowStorm.vcxproj.filters
