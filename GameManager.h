@@ -8,6 +8,7 @@ enum LOBBY_CHOICE
 	QUIT
 };
 
+
 class GameManager
 {
 public:

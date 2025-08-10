@@ -26,17 +26,17 @@ void GameManager::RunGame()
 		switch ((LOBBY_CHOICE)Choice)
 		{
 		case LOBBY_CHOICE::NEW_GAME:
-			m_ArrowStorm.Init();
+			m_ArrowStorm.NewGame();
 			m_ArrowStorm.Run();
 			break;
 		case LOBBY_CHOICE::CONTINUE:
-			if (m_ArrowStorm.Load())
+			if (m_ArrowStorm.LoadGame())
 			{
 				m_ArrowStorm.Run();
 			}
 			else
 			{
-				DrawManager::DrawConfirmPopup("No Save Data Found");
+				DrawManager::DrawInfoPopup("No Save Data Found");
 			}
 			break;
 		case LOBBY_CHOICE::QUIT:

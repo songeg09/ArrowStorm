@@ -2,8 +2,6 @@
 #include "Mecro.h"
 #include "Windows.h"
 
-#include <string>
-#include <iostream>
 
 #define col GetStdHandle(STD_OUTPUT_HANDLE) 
 #define PUPPLE SetConsoleTextAttribute( col,0x0005 );
@@ -27,6 +25,22 @@ namespace DrawManager
 			{
 			case BOARD_OBJECT::WALL:
 				return "▦";
+			case BOARD_OBJECT::PLAYER_UP:
+				return "^";
+			case BOARD_OBJECT::PLAYER_RIGHT:
+				return ">";
+			case BOARD_OBJECT::PLAYER_DOWN:
+				return "v";
+			case BOARD_OBJECT::PLAYER_LEFT:
+				return "<";
+			case BOARD_OBJECT::ARROW_UP:
+				return "↑";
+			case BOARD_OBJECT::ARROW_RIGHT:
+				return "→";
+			case BOARD_OBJECT::ARROW_DOWN:
+				return "↓";
+			case BOARD_OBJECT::ARROW_LEFT:
+				return "←";
 			default:
 				return " ";
 			}
@@ -71,7 +85,16 @@ namespace DrawManager
 		}
 	}
 
-	void DrawPopupContent(const std::string& _Msg)
+	/*
+		인게임에서 원하는 좌표에 _Object를 그린다.
+	*/
+	static void DrawObjectAtLocation(const Position _Position, BOARD_OBJECT _Object)
+	{
+		gotoxy(_Position.m_x * 2, _Position.m_y);
+		std::cout << GetObjectIcon(_Object);
+	}
+
+	static void DrawPopupContent(const std::string& _Msg)
 	{
 		DrawEdges(POPUP_SIZE::POPUP_WIDTH, POPUP_SIZE::POPUP_HEIGHT, "+");
 		DrawMidText(_Msg, ASPECT_RATIO::SCREEN_WIDTH, POPUP_TEXT_OFFSET + POPUP_SIZE::POPUP_HEIGHT * 0.2f);
