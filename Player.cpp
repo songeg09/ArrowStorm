@@ -2,8 +2,8 @@
 #include <conio.h>
 #include "Timer.h"
 
-Player::Player() 
-	: Creature(Position(BOARD_SIZE::BOARD_WIDHT / 2, BOARD_SIZE::BOARD_HEIGHT / 2) , BOARD_OBJECT::PLAYER_UP)
+Player::Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
+	: Creature(Position(BOARD_SIZE::BOARD_WIDTH / 2, BOARD_SIZE::BOARD_HEIGTH / 2) , BOARD_OBJECT::PLAYER_UP)
 {
 	m_FacingDir = DIRECTION::UP;
 	m_MoveTimer->SetTimer(TIME::PLAYER_MOVE_SPEED, std::bind(&Player::HandleMoveInput, this));
@@ -37,42 +37,38 @@ void Player::SetFacingDir(DIRECTION _NewFacingDir)
 }
 
 
-Position Player::TryMove()
+void Player::TryMove()
 {
 	Position NewPosition{};
 	if (_kbhit())
 	{
 		// 키가 눌렸더라도 시간이 지나지 않았으면 -1,-1 반환
-		NewPosition = m_MoveTimer->CheckTimer();
+		m_MoveTimer->CheckTimer();
 		ClearInputBuffer();
 	}
-	return NewPosition;
 }
 
-Position Player::HandleMoveInput()
+void Player::HandleMoveInput()
 {
 	char Input = _getch();
 
-	Position Result;
 	switch ((KEY_BOARD)Input)
 	{
 	case KEY_BOARD::W:
-		Result = TryMoveTowards(DIRECTION::UP);
+		MoveTowards(DIRECTION::UP);
 		break;
 	case KEY_BOARD::D:
-		Result = TryMoveTowards(DIRECTION::RIGHT);
+		MoveTowards(DIRECTION::RIGHT);
 		break;
 	case KEY_BOARD::S: 
-		Result = TryMoveTowards(DIRECTION::DOWN);
+		MoveTowards(DIRECTION::DOWN);
 		break;
 	case KEY_BOARD::A:
-		Result = TryMoveTowards(DIRECTION::LEFT);
+		 MoveTowards(DIRECTION::LEFT);
 		break;
 	default:
 		break;
 	}
-
-	return Result;
 }
 
 DIRECTION Player::TryTurn()

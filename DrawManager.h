@@ -88,7 +88,7 @@ namespace DrawManager
 	/*
 		인게임에서 원하는 좌표에 _Object를 그린다.
 	*/
-	static void DrawObjectAtLocation(const Position _Position, BOARD_OBJECT _Object)
+	static void DrawObjectAtPosition(const Position _Position, BOARD_OBJECT _Object)
 	{
 		gotoxy(_Position.m_x * 2, _Position.m_y);
 		std::cout << GetObjectIcon(_Object);

@@ -11,14 +11,17 @@ public:
 protected:
 	Position m_CurrentPosition;
 	BOARD_OBJECT m_ActorObject;
-	std::unique_ptr<Timer<Position>> m_MoveTimer;
+	std::unique_ptr<Timer<void>> m_MoveTimer;
+
+	// 이동 및 다시 그리기
+	virtual void MoveTowards(const DIRECTION& _Direction);
+	void ApplyNewPosAndRedraw(Position& _NewPosition);
 
 public:
 	Position GetCurrentPosition() { return m_CurrentPosition; }
 	void SetCurrentPosition(const Position& _NextPosition) { m_CurrentPosition = _NextPosition; }
 	BOARD_OBJECT GetActorObject() { return m_ActorObject; }
 	
-	virtual Position TryMove() = 0;
-	Position TryMoveTowards(const DIRECTION& _Direction);
+	virtual void TryMove() = 0;
 };
 

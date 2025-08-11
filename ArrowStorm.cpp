@@ -3,6 +3,7 @@
 #include "Projectile.h"
 #include "Player.h"
 #include "Actor.h"
+#include "Map.h"
 
 ArrowStorm::ArrowStorm()
 {
@@ -26,14 +27,18 @@ bool ArrowStorm::LoadGame()
 
 void ArrowStorm::Initialize()
 {
+	// 맵생성
+	m_CurrentMap = std::make_shared<Map>();
+
 	// 벽 그리기
 	std::string Line;
-	for (int y = 0; y < BOARD_SIZE::BOARD_HEIGHT; ++y)
+	for (int y = 0; y < BOARD_SIZE::BOARD_HEIGTH; ++y)
 	{
 		DrawManager::gotoxy(0, y);
-		for (int x = 0; x < BOARD_SIZE::BOARD_WIDHT * 2; ++x)
+		for (int x = 0; x < BOARD_SIZE::BOARD_WIDTH * 2; ++x)
 		{
-			Line += DrawManager::GetObjectIcon(m_Board[y][x].m_Type);
+			//Line += DrawManager::GetObjectIcon(m_Board[y][x].m_Type);
+			Line += " ";
 		}
 		std::cout << Line;
 	}

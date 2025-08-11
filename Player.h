@@ -7,18 +7,19 @@ class Player : public Creature
 private:
 	DIRECTION m_FacingDir;
 
-	Position HandleMoveInput();
+	void HandleMoveInput();
+	
 	void ClearInputBuffer();
 
 
 public:
-	Player();
+	Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject);
 	~Player();
 
 	DIRECTION GetFacingDir() {return m_FacingDir;}
 	void SetFacingDir(DIRECTION _NewFacingDir);
 	
-	Position TryMove() override;
+	void TryMove() override;
 	DIRECTION TryTurn();
 	FireRequest  TryFire();
 

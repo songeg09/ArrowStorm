@@ -133,6 +133,7 @@
     <ClCompile Include="Creature.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="Mecro.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Projectile.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="Creature.h" />
     <ClInclude Include="DrawManager.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="MapManager.h" />
     <ClInclude Include="Mecro.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Projectile.h" />
