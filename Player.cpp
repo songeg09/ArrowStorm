@@ -9,7 +9,7 @@ Player::Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 	m_Hp = PLAYER_HEALTH;
 	m_FacingDir = DIRECTION::UP;
 	m_MoveTimer->SetTimer(TIME::PLAYER_MOVE_SPEED, std::bind(&Player::MoveTowards, this, std::ref(m_MovingDir)));
-	m_Bow = std::make_unique<Bow>(); // 임시
+	m_Bow = std::make_unique<Bow>(this); // 임시
 }
 
 Player::~Player()
@@ -90,7 +90,7 @@ void Player::HandleInput()
 			SetFacingDir(DIRECTION::LEFT);
 			break;
 		case KEY_BOARD::SPACE:
-			m_Bow->TrySpawnProjectile(m_CurrentPosition + Directions[m_FacingDir], GetArrowObject(), m_FacingDir);
+			m_Bow->TryFire(GetArrowObject(), m_FacingDir);
 			break;
 		default:
 			break;

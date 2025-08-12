@@ -7,6 +7,7 @@ public:
 	virtual ~Creature();
 
 	virtual void Tick() override;
+	virtual void TryMove() override;
 
 	int GetHp() { return m_Hp; }
 	void TakeDamage(int _Damage)
@@ -20,7 +21,7 @@ protected:
 	void MoveTowards(const DIRECTION& _Direction) override;
 	bool IsValidPos(const Position& NewPosition);
 
-	int m_Hp;// 임시
+	int m_Hp = 30;// 임시
 	
 };
 

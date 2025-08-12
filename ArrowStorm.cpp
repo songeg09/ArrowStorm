@@ -55,7 +55,7 @@ void ArrowStorm::Initialize()
 		Line = "";
 		for (int x = 0; x < BOARD_SIZE::BOARD_WIDTH; ++x)
 		{
-			Line += DrawManager::GetObjectIcon(MapManager::GetBoard()[y][x]) + " ";
+			Line += DrawManager::GetObjectIcon(MapManager::GetBoard()[y][x]);
 		}
 		std::cout << Line;
 	}
@@ -63,20 +63,18 @@ void ArrowStorm::Initialize()
 
 	
 	// 플레이어 리셋
-	m_CreatureArr.emplace_back(std::make_unique<Player>(
+	m_CreatureArr.push_back(std::make_unique<Player>(
 		Position(BOARD_SIZE::BOARD_WIDTH / 2, BOARD_SIZE::BOARD_HEIGHT / 2),
 		BOARD_OBJECT::PLAYER_UP
 	));
 
-	// 임시 몬스터
-	/*m_CreatureArr.emplace_back(std::make_unique<Creature>(
-		Position(1,1),
-		BOARD_OBJECT::WALL
-	));*/
 
-	// 생명체들 그리기
-	/*m_CreatureArr.resize(1);
-	m_CreatureArr[0] = std::make_unique<Player>();
+	// 임시 몬스터
+	m_CreatureArr.push_back(std::make_unique<Creature>(
+		Position(10,3),
+		BOARD_OBJECT::WALL
+	));
+
 	for (int id = 0; id < m_CreatureArr.size(); ++id)
 	{
 		if (m_CreatureArr[id])
@@ -85,7 +83,7 @@ void ArrowStorm::Initialize()
 			BOARD_OBJECT CreatureObj = m_CreatureArr[id]->GetActorObject();
 			DrawManager::DrawObjectAtPosition(CreaturePos, CreatureObj);
 		}
-	}*/
+	}
 }
 
 void ArrowStorm::Run()
@@ -95,7 +93,6 @@ void ArrowStorm::Run()
 	while (1)
 	{
 		Tick();
-
 		CollisionCheck();
 
 		//if (IsGameOver())
@@ -130,18 +127,14 @@ void ArrowStorm::CollisionCheck()
 	{
 		Position CurrentPos = (*it)->GetCurrentPosition();
 
-		// 1. 범위 밖
-		if (!InRange(CurrentPos))
-		{
-			RemoveProjectile(it);
-		}
-		// 2. 벽에 충돌
-		else if (MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x] == BOARD_OBJECT::WALL)
+		// 1. 범위 밖 or 벽에 충돌
+		if (!InRange(CurrentPos) || MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x] == BOARD_OBJECT::WALL)
 		{
 			RemoveProjectile(it);
 		}
 		else
 		{
+			// 2. 크리쳐에 맞았을 경우
 			int HitIndex = DidHit((*it));
 			if (HitIndex != -1)
 			{

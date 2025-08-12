@@ -42,7 +42,7 @@ namespace DrawManager
 			case BOARD_OBJECT::ARROW_LEFT:
 				return "ก็";
 			default:
-				return " ";
+				return "  ";
 			}
 	}
 
