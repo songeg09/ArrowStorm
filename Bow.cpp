@@ -24,7 +24,6 @@ void Bow::TrySpawnProjectile(Position _InitialPos, BOARD_OBJECT _Object, DIRECTI
 
 void Bow::SpawnProjectile(Position _InitialPos, BOARD_OBJECT _Object, DIRECTION _MovingDir)
 {
-	std::unique_ptr<Projectile> _Projectile = std::make_unique<Projectile>(_InitialPos, _Object, _MovingDir);
-	ArrowStorm::GetInstance().RegisterProjectile(std::move(_Projectile));
+	ArrowStorm::GetInstance().GetProjectileList().emplace_back(std::make_unique<Projectile>(_InitialPos, _Object, _MovingDir));	
 }
 

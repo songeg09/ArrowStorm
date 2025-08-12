@@ -4,8 +4,7 @@
 class Bow
 {
 private:
-	
-	DAMAGE m_Damage;
+	int m_Damage;
 	std::unique_ptr<class Timer> m_AttackTimer;
 	
 	void SpawnProjectile(Position _InitialPos, BOARD_OBJECT _Object, DIRECTION _FacingDir);

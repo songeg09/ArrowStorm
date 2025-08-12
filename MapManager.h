@@ -5,7 +5,7 @@ class MapManager
 private:
 	MapManager() {}
 	~MapManager() {}
-	BOARD_OBJECT m_Board[BOARD_SIZE::BOARD_HEIGTH][BOARD_SIZE::BOARD_WIDTH] = {};
+	BOARD_OBJECT m_Board[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH] = {};
 
 public:
 	static MapManager& GetInstance()
@@ -14,9 +14,9 @@ public:
 		return Manager;
 	}
 
-	BOARD_OBJECT (*GetBoard())[BOARD_SIZE::BOARD_WIDTH]
+	static BOARD_OBJECT (*GetBoard())[BOARD_SIZE::BOARD_WIDTH]
 	{
-		return &m_Board[0]; 
+		return GetInstance().m_Board;
 	}
 };
 

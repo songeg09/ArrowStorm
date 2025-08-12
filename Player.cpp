@@ -6,6 +6,7 @@
 Player::Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 	: Creature(_InitialPosition, _ActorObject)
 {
+	m_Hp = PLAYER_HEALTH;
 	m_FacingDir = DIRECTION::UP;
 	m_MoveTimer->SetTimer(TIME::PLAYER_MOVE_SPEED, std::bind(&Player::MoveTowards, this, std::ref(m_MovingDir)));
 	m_Bow = std::make_unique<Bow>(); // юс╫ц

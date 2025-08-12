@@ -3,7 +3,7 @@
 #include "Projectile.h"
 #include "Player.h"
 #include "Actor.h"
-#include "Projectile.h"
+#include "MapManager.h"
 
 ArrowStorm& ArrowStorm::GetInstance()
 {
@@ -23,7 +23,21 @@ ArrowStorm::~ArrowStorm()
 
 void ArrowStorm::NewGame()
 {
-	
+	// 임시 초기화
+	for (int y = 0; y < BOARD_SIZE::BOARD_HEIGHT; ++y)
+	{
+		for (int x = 0; x < BOARD_SIZE::BOARD_WIDTH; ++x)
+		{
+			if (y == 0 || x == 0 || y == BOARD_SIZE::BOARD_HEIGHT - 1 || x == BOARD_SIZE::BOARD_WIDTH - 1)
+			{
+				MapManager::GetBoard()[y][x] = BOARD_OBJECT::WALL;
+			}
+			else
+			{
+				MapManager::GetBoard()[y][x] = BOARD_OBJECT::EMPTY;
+			}
+		}
+	}
 }
 
 bool ArrowStorm::LoadGame()
@@ -33,28 +47,32 @@ bool ArrowStorm::LoadGame()
 
 void ArrowStorm::Initialize()
 {
-
 	// 벽 그리기
 	std::string Line;
-	for (int y = 0; y < BOARD_SIZE::BOARD_HEIGTH; ++y)
+	for (int y = 0; y < BOARD_SIZE::BOARD_HEIGHT; ++y)
 	{
 		DrawManager::gotoxy(0, y);
-		for (int x = 0; x < BOARD_SIZE::BOARD_WIDTH * 2; ++x)
+		Line = "";
+		for (int x = 0; x < BOARD_SIZE::BOARD_WIDTH; ++x)
 		{
-			//Line += DrawManager::GetObjectIcon(m_Board[y][x].m_Type);
-			Line += " ";
+			Line += DrawManager::GetObjectIcon(MapManager::GetBoard()[y][x]) + " ";
 		}
 		std::cout << Line;
 	}
 	// 아이템 상자 및 출입구 그리기
 
+	
 	// 플레이어 리셋
-	m_Player = std::make_unique<Player>(
-		Position(BOARD_SIZE::BOARD_WIDTH / 2, BOARD_SIZE::BOARD_HEIGTH / 2),
+	m_CreatureArr.emplace_back(std::make_unique<Player>(
+		Position(BOARD_SIZE::BOARD_WIDTH / 2, BOARD_SIZE::BOARD_HEIGHT / 2),
 		BOARD_OBJECT::PLAYER_UP
-	);
+	));
 
-	DrawManager::DrawObjectAtPosition(m_Player->GetCurrentPosition(), m_Player->GetActorObject());
+	// 임시 몬스터
+	/*m_CreatureArr.emplace_back(std::make_unique<Creature>(
+		Position(1,1),
+		BOARD_OBJECT::WALL
+	));*/
 
 	// 생명체들 그리기
 	/*m_CreatureArr.resize(1);
@@ -88,21 +106,21 @@ void ArrowStorm::Run()
 void ArrowStorm::Tick()
 {
 	// 플레이어 틱
-	m_Player->Tick();
+	m_CreatureArr[0]->Tick();
+	//m_Player->Tick();
 
 	// 몬스터 틱
-	for (int i = 0; i < m_CreatureArr.size(); ++i)
+	for (int i = 1; i < m_CreatureArr.size(); ++i)
 	{
 		if (m_CreatureArr[i] == nullptr) continue;
 
 		m_CreatureArr[i]->Tick();
-		// Attack?
 	}
 
 	// 투사체 틱
-	for (auto& Projectile : m_ProjectileList)
+	for (std::list<std::unique_ptr<Projectile>>::iterator it = m_ProjectileList.begin(); it != m_ProjectileList.end(); it++)
 	{
-		Projectile->Tick();
+		(*it)->Tick();
 	}
 }
 
@@ -110,21 +128,83 @@ void ArrowStorm::CollisionCheck()
 {
 	for (std::list<std::unique_ptr<Projectile>>::iterator it = m_ProjectileList.begin(); it != m_ProjectileList.end();)
 	{
-		if (!InRange((*it)->GetCurrentPosition()))
+		Position CurrentPos = (*it)->GetCurrentPosition();
+
+		// 1. 범위 밖
+		if (!InRange(CurrentPos))
 		{
-			it = m_ProjectileList.erase(it);
+			RemoveProjectile(it);
+		}
+		// 2. 벽에 충돌
+		else if (MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x] == BOARD_OBJECT::WALL)
+		{
+			RemoveProjectile(it);
 		}
 		else
 		{
-			it++;
+			int HitIndex = DidHit((*it));
+			if (HitIndex != -1)
+			{
+				// 데미지 적용
+				m_CreatureArr[HitIndex]->TakeDamage((*it)->GetDamage());
+				AfterHit(HitIndex);
+				it = m_ProjectileList.erase(it);
+			}
+			else
+			{
+				++it;
+			}
 		}
 	}
 }
 
-
-void ArrowStorm::RegisterProjectile(std::unique_ptr<Projectile> _Projectile)
+// 화살이 크리쳐를 맞추었을 경우,
+// 해당 크리쳐의 인덱스를 반환
+int ArrowStorm::DidHit(const std::unique_ptr<Projectile>& _Projectile)
 {
-	m_ProjectileList.emplace_back(std::move(_Projectile));
+	for (int index = 0; index < m_CreatureArr.size(); ++index)
+	{
+		if (m_CreatureArr[index] == nullptr) continue;
+
+		if (m_CreatureArr[index]->GetCurrentPosition() == _Projectile->GetCurrentPosition())
+		{
+			return index;
+		}
+	}
+	return -1;
+}
+
+// 체력을 확인하고 죽어야 한다면 맵에서 지우고
+// 인스턴스 삭제해주기
+void ArrowStorm::AfterHit(const int& _Index)
+{
+	Position CurrentPos = m_CreatureArr[_Index]->GetCurrentPosition();
+	
+	// 죽어야 하는 경우 지우기
+	if (m_CreatureArr[_Index]->GetHp() == 0)
+	{
+		DrawManager::DrawObjectAtPosition(
+			CurrentPos, 
+			MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x]
+		);
+		m_CreatureArr[_Index] = nullptr;
+	}
+
+	// 살았을 경우 화살을 지우고 크리쳐 다시 그려주기
+	else
+	{
+		DrawManager::DrawObjectAtPosition(
+			CurrentPos,
+			m_CreatureArr[_Index]->GetActorObject()
+		);
+	}
+}
+
+void ArrowStorm::RemoveProjectile(std::list<std::unique_ptr<Projectile>>::iterator& it)
+{
+	Position CurrentPos = (*it)->GetCurrentPosition();
+	DrawManager::DrawObjectAtPosition(CurrentPos, MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x]);
+	it = m_ProjectileList.erase(it);
 }
 
 ///*
@@ -144,6 +224,6 @@ void ArrowStorm::RegisterProjectile(std::unique_ptr<Projectile> _Projectile)
 bool ArrowStorm::InRange(const Position& _Position)
 {
 	return (0 <= _Position.m_x && _Position.m_x < BOARD_SIZE::BOARD_WIDTH
-		&& 0 <= _Position.m_y && _Position.m_y < BOARD_SIZE::BOARD_HEIGTH);
+		&& 0 <= _Position.m_y && _Position.m_y < BOARD_SIZE::BOARD_HEIGHT);
 }
 

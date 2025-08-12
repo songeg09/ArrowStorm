@@ -8,14 +8,16 @@ class Projectile : public Actor
 {
 private:
 	DIRECTION m_MovingDirection;
-	DAMAGE m_Damage;
+	int m_Damage;
 
 	void TryMove() override;
 
 public:
-	Projectile(const Position _InitialPosition, const BOARD_OBJECT _ActorObject, const DIRECTION _MovingDirection, DAMAGE _Damage = DEFAULT_DAMAGE);	
-	Projectile(FireRequest _Request, DAMAGE _Damage = DEFAULT_DAMAGE);
+	Projectile(const Position _InitialPosition, const BOARD_OBJECT _ActorObject, const DIRECTION _MovingDirection, int _Damage = DEFAULT_DAMAGE);	
+	Projectile(FireRequest _Request, int _Damage = DEFAULT_DAMAGE);
 	~Projectile();
+
+	int GetDamage() { return m_Damage; }
 
 	virtual void Tick() override;
 };

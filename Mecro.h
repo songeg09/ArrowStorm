@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+constexpr int PLAYER_HEALTH = 100;
+constexpr int DEFAULT_DAMAGE = 10;
 
 enum ASPECT_RATIO
 {
@@ -14,7 +16,7 @@ enum ASPECT_RATIO
 enum BOARD_SIZE
 {
 	BOARD_WIDTH = 50,
-	BOARD_HEIGTH = 25
+	BOARD_HEIGHT = 25
 };
 
 enum BOARD_OBJECT
@@ -117,10 +119,13 @@ enum TIME
 	PLAYER_MOVE_SPEED = 500,
 };
 
-enum DAMAGE
+enum HP
 {
-	DEFAULT_DAMAGE = 10,
+	DAMAGE_DEFAULT = 10,
+	HEALTH_PLAYER = 100,
+	HEALTH_MONSTER = 10,
 };
+
 
 struct FireRequest
 {

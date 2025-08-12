@@ -8,8 +8,19 @@ public:
 
 	virtual void Tick() override;
 
+	int GetHp() { return m_Hp; }
+	void TakeDamage(int _Damage)
+	{
+		m_Hp -= _Damage;
+		if (m_Hp < 0)
+			m_Hp = 0;
+	}
+
 protected:
 	void MoveTowards(const DIRECTION& _Direction) override;
 	bool IsValidPos(const Position& NewPosition);
+
+	int m_Hp;// юс╫ц
+	
 };
 
