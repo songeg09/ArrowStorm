@@ -1,5 +1,4 @@
 #pragma once
-#include "ArrowStorm.h"
 
 enum LOBBY_CHOICE 
 {
@@ -18,8 +17,6 @@ public:
 	void RunGame();
 
 private:
-	ArrowStorm m_ArrowStorm;
-
 	void DrawLobby();
 	void DrawChoices();
 

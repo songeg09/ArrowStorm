@@ -3,8 +3,8 @@
 class MapManager
 {
 private:
-	MapManager();
-	~MapManager();
+	MapManager() {}
+	~MapManager() {}
 	BOARD_OBJECT m_Board[BOARD_SIZE::BOARD_HEIGTH][BOARD_SIZE::BOARD_WIDTH] = {};
 
 public:

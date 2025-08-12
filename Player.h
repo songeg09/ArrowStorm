@@ -6,23 +6,23 @@ class Player : public Creature
 
 private:
 	DIRECTION m_FacingDir;
+	DIRECTION m_MovingDir;
+	std::unique_ptr<class Bow> m_Bow;
 
-	void HandleMoveInput();
-	
+	void HandleInput();
 	void ClearInputBuffer();
+	void SetFacingDir(DIRECTION _NewFacingDir);
+	BOARD_OBJECT GetArrowObject();
 
+	void TryMove() override;
 
 public:
 	Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject);
 	~Player();
 
 	DIRECTION GetFacingDir() {return m_FacingDir;}
-	void SetFacingDir(DIRECTION _NewFacingDir);
 	
-	void TryMove() override;
-	DIRECTION TryTurn();
-	FireRequest  TryFire();
+	virtual void Tick() override;
 
-	//TestTryShoot();
 };
 

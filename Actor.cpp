@@ -1,12 +1,13 @@
 #include "Actor.h"
 #include "DrawManager.h"
 #include "MapManager.h"
+#include "Timer.h"
 
 Actor::Actor(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 {
 	m_CurrentPosition = _InitialPosition;
 	m_ActorObject = _ActorObject;
-	m_MoveTimer = std::make_unique<Timer<void>>();
+	m_MoveTimer = std::make_unique<Timer>();
 }
 
 Actor::~Actor() 
@@ -17,10 +18,10 @@ Actor::~Actor()
 void Actor::MoveTowards(const DIRECTION& _Direction)
 {
 	Position NewPosition = m_CurrentPosition + Directions[_Direction];
-	ApplyNewPosAndRedraw(NewPosition);
+	Redraw(NewPosition);
 }
 
-void Actor::ApplyNewPosAndRedraw(Position& _NewPosition)
+void Actor::Redraw(Position& _NewPosition)
 {
 	DrawManager::DrawObjectAtPosition(
 		m_CurrentPosition, 
@@ -28,4 +29,9 @@ void Actor::ApplyNewPosAndRedraw(Position& _NewPosition)
 	);
 	m_CurrentPosition = _NewPosition;
 	DrawManager::DrawObjectAtPosition(m_CurrentPosition, m_ActorObject);
+}
+
+void Actor::Tick() 
+{
+	TryMove();
 }

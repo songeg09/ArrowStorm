@@ -8,8 +8,7 @@ class ArrowStorm
 {
 
 public:
-	ArrowStorm();
-	~ArrowStorm();
+	static ArrowStorm& GetInstance();
 
 	void NewGame();
 	bool LoadGame();
@@ -17,22 +16,21 @@ public:
 	void Initialize();
 	void Run();
 
+	void RegisterProjectile(std::unique_ptr<class Projectile> _Projectile);
+
 private:
-	std::vector<std::unique_ptr<class Creature>> m_CreatureArr; // 0 번 인덱스는 항상 플레이어
+	ArrowStorm();
+	~ArrowStorm();
+
+	std::unique_ptr<class Player> m_Player;
+	std::vector<std::unique_ptr<class Creature>> m_CreatureArr; // 몬스터
 	std::list<std::unique_ptr<class Projectile>> m_ProjectileList;
 
+	void Tick();
+	void CollisionCheck();
+	bool IsGameOver();
 
-	void HandleAllCreatureMoveRequests();
-	void HandleCretureMoveRequest(std::unique_ptr<class Creature>& _Actor, const int _Id);
-	void ApplyCreatureMoveAndRedraw(std::unique_ptr<class Creature>& _Creature, const Position& _NewPosition, const int _Id);
-	void HandlePlayerTurnRequest();
-	void HandlePlayerFireRequest();
-
-	void HandleAllProjectileMoveRequests();
-	void ApplyProjectileMoveAndRedraw(std::unique_ptr<class Projectile>& _Projectile);
-	void ApplyProjectileMoveAndRedraw(std::unique_ptr<class Projectile>& _Projectile, const Position& _NewPosition);
-
-	bool IsMovableTile(const Position& _Position);
+	//bool IsMovableTile(const Position& _Position);
 	bool InRange(const Position& _Position);
 
 };

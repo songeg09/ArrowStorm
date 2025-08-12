@@ -11,12 +11,17 @@ Creature::~Creature()
 
 void Creature::MoveTowards(const DIRECTION& _Direction)
 {
-	Position NextPosition = m_CurrentPosition + _Direction;
+	Position NextPosition = m_CurrentPosition + Directions[_Direction];
 	if (IsValidPos(NextPosition))
-		ApplyNewPosAndRedraw(NextPosition);
+		Redraw(NextPosition);
 }
 
 bool Creature::IsValidPos(const Position& NewPosition)
 {
 	return true;
+}
+
+void Creature::Tick()
+{
+	Actor::Tick();
 }

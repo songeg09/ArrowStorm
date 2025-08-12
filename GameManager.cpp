@@ -1,6 +1,7 @@
 #include "GameManager.h"
 #include "DrawManager.h"
 #include "Mecro.h"
+#include "ArrowStorm.h"
 
 #include <iostream>
 
@@ -26,13 +27,13 @@ void GameManager::RunGame()
 		switch ((LOBBY_CHOICE)Choice)
 		{
 		case LOBBY_CHOICE::NEW_GAME:
-			m_ArrowStorm.NewGame();
-			m_ArrowStorm.Run();
+			ArrowStorm::GetInstance().NewGame();
+			ArrowStorm::GetInstance().Run();
 			break;
 		case LOBBY_CHOICE::CONTINUE:
-			if (m_ArrowStorm.LoadGame())
+			if (ArrowStorm::GetInstance().LoadGame())
 			{
-				m_ArrowStorm.Run();
+				ArrowStorm::GetInstance().Run();
 			}
 			else
 			{

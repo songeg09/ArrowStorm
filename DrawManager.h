@@ -26,7 +26,7 @@ namespace DrawManager
 			case BOARD_OBJECT::WALL:
 				return "¢Ë";
 			case BOARD_OBJECT::PLAYER_UP:
-				return "^";
+				return "A";
 			case BOARD_OBJECT::PLAYER_RIGHT:
 				return ">";
 			case BOARD_OBJECT::PLAYER_DOWN:
