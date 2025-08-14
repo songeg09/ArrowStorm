@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Actor.h"
 #include "MapManager.h"
+#include "Slime.h"
 
 ArrowStorm& ArrowStorm::GetInstance()
 {
@@ -70,9 +71,8 @@ void ArrowStorm::Initialize()
 
 
 	// 임시 몬스터
-	m_CreatureArr.push_back(std::make_unique<Creature>(
-		Position(10,3),
-		BOARD_OBJECT::WALL
+	m_CreatureArr.push_back(std::make_unique<Slime>(
+		Position(10,3)
 	));
 
 	for (int id = 0; id < m_CreatureArr.size(); ++id)

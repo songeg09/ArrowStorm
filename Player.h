@@ -14,8 +14,6 @@ private:
 	void SetFacingDir(DIRECTION _NewFacingDir);
 	BOARD_OBJECT GetArrowObject();
 
-	void TryMove() override;
-
 public:
 	Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject);
 	~Player();

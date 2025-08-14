@@ -25,8 +25,3 @@ void Creature::Tick()
 {
 	Actor::Tick();
 }
-
-void Creature::TryMove()
-{
-
-}

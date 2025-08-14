@@ -24,6 +24,7 @@ enum BOARD_OBJECT
 	EMPTY,
 	WALL,
 	DOOR,
+	CHEST,
 	PLAYER_UP,
 	PLAYER_RIGHT,
 	PLAYER_DOWN,
@@ -32,6 +33,9 @@ enum BOARD_OBJECT
 	ARROW_RIGHT,
 	ARROW_DOWN,
 	ARROW_LEFT,
+	SKELETON,
+	SLIME,
+
 };
 
 enum POPUP_SIZE
@@ -77,6 +81,11 @@ struct Position
 	{
 		return Position(m_x + other.m_x, m_y + other.m_y);
 	}
+
+	int operator-(const Position& other)
+	{
+		return abs(m_x - other.m_x) + abs(m_y - other.m_y);
+	}
 	
 	Position operator+(const int _Num)
 	{
@@ -102,8 +111,8 @@ enum KEY_BOARD
 	A = 97,
 	S = 115,
 	D = 100,
-	SPACE = 32,
-	SHIFT = 15,
+	U = 117,
+	O = 111,
 	ONE = 49,
 	TWO = 50,
 	I = 105,
@@ -115,16 +124,10 @@ enum KEY_BOARD
 enum TIME
 {
 	DEFAULT_PROJECTILE_SPEED = 100,
+	SLIME_MOVE_SPEED = 1000,
 	PLAYER_MOVE_SPEED = 500,
 	DEFAULT_ATTACK_COOL = 1000,
 	DEFAULT_SKILL_COOL = 5000,
-};
-
-enum HP
-{
-	DAMAGE_DEFAULT = 10,
-	HEALTH_PLAYER = 100,
-	HEALTH_MONSTER = 10,
 };
 
 

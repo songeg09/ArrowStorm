@@ -25,6 +25,8 @@ namespace DrawManager
 			{
 			case BOARD_OBJECT::WALL:
 				return "¢Ë";
+			case BOARD_OBJECT::CHEST:
+				return "»ó";
 			case BOARD_OBJECT::PLAYER_UP:
 				return "A";
 			case BOARD_OBJECT::PLAYER_RIGHT:
@@ -41,6 +43,10 @@ namespace DrawManager
 				return "¡é";
 			case BOARD_OBJECT::ARROW_LEFT:
 				return "¡ç";
+			case BOARD_OBJECT::SKELETON:
+				return "ÇØ";
+			case BOARD_OBJECT::SLIME:
+				return "½½";
 			default:
 				return "  ";
 			}

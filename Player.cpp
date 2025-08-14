@@ -48,11 +48,6 @@ void Player::SetFacingDir(DIRECTION _NewFacingDir)
 	}
 }
 
-void Player::TryMove()
-{
-	m_MoveTimer->CheckTimer();
-}
-
 void Player::HandleInput()
 {
 	if (_kbhit())
@@ -89,9 +84,11 @@ void Player::HandleInput()
 		case KEY_BOARD::J:
 			SetFacingDir(DIRECTION::LEFT);
 			break;
-		case KEY_BOARD::SPACE:
-			m_Bow->TryFire(GetArrowObject(), m_FacingDir);
+		case KEY_BOARD::U:
+			m_Bow->TryFire(m_FacingDir);
 			break;
+		case KEY_BOARD::O:
+			m_Bow->TrySkill();
 		default:
 			break;
 		}
@@ -100,20 +97,6 @@ void Player::HandleInput()
 	
 }
 
-BOARD_OBJECT Player::GetArrowObject()
-{
-	switch (m_FacingDir)
-	{
-	case DIRECTION::UP:
-		return BOARD_OBJECT::ARROW_UP;
-	case DIRECTION::RIGHT:
-		return BOARD_OBJECT::ARROW_RIGHT;
-	case DIRECTION::DOWN:
-		return BOARD_OBJECT::ARROW_DOWN;
-	case DIRECTION::LEFT:
-		return BOARD_OBJECT::ARROW_LEFT;
-	}
-}
 void Player::ClearInputBuffer()
 {
 	while (_kbhit()) // 버퍼에 입력이 남아 있는 동안

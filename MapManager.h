@@ -18,5 +18,15 @@ public:
 	{
 		return GetInstance().m_Board;
 	}
+
+	static bool IsValidPosition(const Position& Pos)
+	{
+		if (!(0 <= Pos.m_x && Pos.m_x < BOARD_SIZE::BOARD_WIDTH && 0 <= Pos.m_y && Pos.m_y < BOARD_SIZE::BOARD_HEIGHT))
+			return false;
+		if (GetInstance().m_Board[Pos.m_y][Pos.m_x] == BOARD_OBJECT::WALL)
+			return false;
+
+		return true;
+	}
 };
 

@@ -35,3 +35,9 @@ void Actor::Tick()
 {
 	TryMove();
 }
+
+void Actor::TryMove()
+{
+	m_MoveTimer->CheckTimer();
+}
+

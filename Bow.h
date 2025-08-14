@@ -6,21 +6,19 @@ class Bow
 protected:
 	class Creature* m_Owner;
 	int m_Damage;
+	DIRECTION m_AmingDir;
 	std::unique_ptr<class Timer> m_AttackTimer;
 	std::unique_ptr<class Timer> m_SkillTimer;
 	
-	void SpawnProjectile(Position _InitialPos, BOARD_OBJECT _Object, DIRECTION _FacingDir);
-	void TempCheck() {}
-	
+	BOARD_OBJECT GetArrowObject(const DIRECTION _AmingDir);
+	void Fire(const DIRECTION _AmingDir);
+	void UseSkill();
+
 public:
 	Bow(Creature* _Owner);
-	~Bow();
+	virtual ~Bow();
 
-	void TryFire(BOARD_OBJECT _Object, DIRECTION _FacingDir);
-	void Fire();
-
+	void TryFire(const DIRECTION _AmingDir);
 	void TrySkill();
-	void UseSkill();
-	
 };
 

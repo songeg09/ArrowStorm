@@ -16,13 +16,19 @@ public:
 	void Initialize();
 	void Run();
 
-	std::list<std::unique_ptr<class Projectile>>& GetProjectileList(){return m_ProjectileList;}
+	static std::list<std::unique_ptr<class Projectile>>& GetProjectileList()
+	{
+		return GetInstance().m_ProjectileList;
+	}
+	static std::vector<std::unique_ptr<class Creature>>& GetCreatureArr()
+	{ 
+		return GetInstance().m_CreatureArr;
+	}
 
 private:
 	ArrowStorm();
 	~ArrowStorm();
 
-	//std::unique_ptr<class Player> m_Player;
 	std::vector<std::unique_ptr<class Creature>> m_CreatureArr; // 0번은 항상 플레이어
 	std::list<std::unique_ptr<class Projectile>> m_ProjectileList;
 
