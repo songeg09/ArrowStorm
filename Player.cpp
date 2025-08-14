@@ -2,19 +2,29 @@
 #include <conio.h>
 #include "Timer.h"
 #include "Bow.h"
+#include "UIManager.h"
 
 Player::Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 	: Creature(_InitialPosition, _ActorObject)
 {
-	m_Hp = PLAYER_HEALTH;
+	m_Hp = PLAYER_HP;
+	m_Mp = PLAYER_MP;
 	m_FacingDir = DIRECTION::UP;
 	m_MoveTimer->SetTimer(TIME::PLAYER_MOVE_SPEED, std::bind(&Player::MoveTowards, this, std::ref(m_MovingDir)));
 	m_Bow = std::make_unique<Bow>(this); // юс╫ц
+
+	UIManager::DrawUI(m_Bow->GetName(), m_Hp, m_Mp);
 }
 
 Player::~Player()
 {
 
+}
+
+void Player::TakeDamage(const int _Damage)
+{
+	Creature::TakeDamage(_Damage);
+	UIManager::UpdateHp(m_Hp);
 }
 
 void Player::Tick()
@@ -88,7 +98,11 @@ void Player::HandleInput()
 			m_Bow->TryFire(m_FacingDir);
 			break;
 		case KEY_BOARD::O:
-			m_Bow->TrySkill();
+			if (m_Mp > 0)
+			{
+				m_Bow->TrySkill();
+			}
+			break;
 		default:
 			break;
 		}

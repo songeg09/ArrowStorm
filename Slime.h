@@ -13,7 +13,8 @@ public:
 protected:
 	void FollowTarget();
 	Position GetNextPosition();
-	void MarkingsForBFS(bool option);
+
+	void MakeBoardSnapshot(BOARD_OBJECT(&out)[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH]);
 	
 };
 

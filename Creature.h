@@ -9,7 +9,7 @@ public:
 	virtual void Tick() override;
 
 	int GetHp() { return m_Hp; }
-	void TakeDamage(const int _Damage)
+	virtual void TakeDamage(const int _Damage)
 	{
 		m_Hp -= _Damage;
 		if (m_Hp < 0)

@@ -1,4 +1,6 @@
 #include "Creature.h"
+#include "MapManager.h"
+#include "ArrowStorm.h"
 
 Creature::Creature(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 	: Actor(_InitialPosition, _ActorObject)
@@ -9,17 +11,14 @@ Creature::~Creature()
 {
 }
 
+
 void Creature::MoveTowards(const DIRECTION& _Direction)
 {
 	Position NextPosition = m_CurrentPosition + Directions[_Direction];
-	if (IsValidPos(NextPosition))
-		Redraw(NextPosition);
+	if (!MapManager::IsValidPos(NextPosition) || ArrowStorm::CreatureExistAtPos(NextPosition)) return;
+	Redraw(NextPosition);
 }
 
-bool Creature::IsValidPos(const Position& NewPosition)
-{
-	return true;
-}
 
 void Creature::Tick()
 {

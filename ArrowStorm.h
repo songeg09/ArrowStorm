@@ -25,24 +25,23 @@ public:
 		return GetInstance().m_CreatureArr;
 	}
 
+	static bool CreatureExistAtPos(const Position& _Pos);
+
 private:
 	ArrowStorm();
 	~ArrowStorm();
 
 	std::vector<std::unique_ptr<class Creature>> m_CreatureArr; // 0번은 항상 플레이어
-	std::list<std::unique_ptr<class Projectile>> m_ProjectileList;
+	std::list<std::unique_ptr<Projectile>> m_ProjectileList;
 
 	void Tick();
+	void CommitTick();
 	void CollisionCheck();
 	bool IsGameOver();
 
 	void RemoveProjectile(std::list<std::unique_ptr<Projectile>>::iterator& it);
 	int DidHit(const std::unique_ptr<Projectile>& _Projectile);
-	void AfterHit(const int& _Index);
-
-	
-	//bool IsMovableTile(const Position& _Position);
-	bool InRange(const Position& _Position);
+	void ApplyHit(const int& _Index, const int _Damage);
 
 };
 

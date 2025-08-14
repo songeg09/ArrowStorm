@@ -4,6 +4,7 @@
 class Bow
 {
 protected:
+	std::string m_Name;
 	class Creature* m_Owner;
 	int m_Damage;
 	DIRECTION m_AmingDir;
@@ -20,5 +21,6 @@ public:
 
 	void TryFire(const DIRECTION _AmingDir);
 	void TrySkill();
+	std::string GetName() { return m_Name; }
 };
 

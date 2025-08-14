@@ -139,6 +139,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Slime.cpp" />
+    <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Slime.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ArrowStorm.rc" />

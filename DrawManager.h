@@ -7,6 +7,7 @@
 #define PUPPLE SetConsoleTextAttribute( col,0x0005 );
 #define ORIGINAL SetConsoleTextAttribute( col,0x0007 );
 #define RED SetConsoleTextAttribute( col,0x000c );
+#define BLUE SetConsoleTextAttribute( col,0x0001);
 
 constexpr int POPUP_TEXT_OFFSET = ASPECT_RATIO::SCREEN_HEIGHT / 2 - POPUP_SIZE::POPUP_HEIGHT / 2;;
 
@@ -24,7 +25,7 @@ namespace DrawManager
 			switch (_eObject)
 			{
 			case BOARD_OBJECT::WALL:
-				return "¢Ë";
+				return "¢Ë ";
 			case BOARD_OBJECT::CHEST:
 				return "»ó";
 			case BOARD_OBJECT::PLAYER_UP:
@@ -98,6 +99,12 @@ namespace DrawManager
 	{
 		gotoxy(_Position.m_x * 2, _Position.m_y);
 		std::cout << GetObjectIcon(_Object);
+	}
+
+	static void DrawAtPos(const Position _Position, std::string _Msg)
+	{
+		gotoxy(_Position.m_x * 2, _Position.m_y);
+		std::cout << _Msg;
 	}
 
 	static void DrawPopupContent(const std::string& _Msg)

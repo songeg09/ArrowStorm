@@ -3,10 +3,13 @@
 #include "ArrowStorm.h"
 #include "Projectile.h"
 #include "Creature.h"
+#include "Player.h"
+#include "UIManager.h"
 #include <memory>
 
 Bow::Bow(Creature* _Owner)
 {
+	m_Name = "�⺻ Ȱ";
 	m_Owner = _Owner;
 	m_AttackTimer = std::make_unique<Timer>();
 	m_AttackTimer->SetTimer(TIME::DEFAULT_ATTACK_COOL, std::bind(&Bow::Fire,this,std::ref(m_AmingDir)));
@@ -18,7 +21,6 @@ Bow::~Bow()
 {
 	
 }
-
 
 void Bow::TryFire(const DIRECTION _AmingDir)
 {
@@ -44,6 +46,12 @@ void Bow::UseSkill()
 	Fire(DIRECTION::RIGHT);
 	Fire(DIRECTION::DOWN);
 	Fire(DIRECTION::LEFT);
+
+	if (Player* player = dynamic_cast<Player*>(m_Owner))
+	{
+		player->UseMp();
+		UIManager::UpdateMp(player->GetMp());
+	}
 }
 
 BOARD_OBJECT Bow::GetArrowObject(const DIRECTION _AmingDir)

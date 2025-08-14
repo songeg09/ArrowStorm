@@ -1,10 +1,13 @@
 #include "ArrowStorm.h"
 #include "DrawManager.h"
+#include "MapManager.h"
+
 #include "Projectile.h"
 #include "Player.h"
 #include "Actor.h"
-#include "MapManager.h"
 #include "Slime.h"
+#include "Bow.h"
+
 
 ArrowStorm& ArrowStorm::GetInstance()
 {
@@ -48,6 +51,7 @@ bool ArrowStorm::LoadGame()
 
 void ArrowStorm::Initialize()
 {
+	m_CreatureArr.clear();
 	// 벽 그리기
 	std::string Line;
 	for (int y = 0; y < BOARD_SIZE::BOARD_HEIGHT; ++y)
@@ -68,7 +72,6 @@ void ArrowStorm::Initialize()
 		Position(BOARD_SIZE::BOARD_WIDTH / 2, BOARD_SIZE::BOARD_HEIGHT / 2),
 		BOARD_OBJECT::PLAYER_UP
 	));
-
 
 	// 임시 몬스터
 	m_CreatureArr.push_back(std::make_unique<Slime>(
@@ -94,9 +97,13 @@ void ArrowStorm::Run()
 	{
 		Tick();
 		CollisionCheck();
+		CommitTick();
 
-		//if (IsGameOver())
-		//	return;
+		if (IsGameOver())
+		{
+			DrawManager::DrawInfoPopup("Game Over!");
+			return;
+		}
 	}
 }
 
@@ -104,7 +111,6 @@ void ArrowStorm::Tick()
 {
 	// 플레이어 틱
 	m_CreatureArr[0]->Tick();
-	//m_Player->Tick();
 
 	// 몬스터 틱
 	for (int i = 1; i < m_CreatureArr.size(); ++i)
@@ -121,6 +127,7 @@ void ArrowStorm::Tick()
 	}
 }
 
+//활 충돌 확인 및 데미지 적용
 void ArrowStorm::CollisionCheck()
 {
 	for (std::list<std::unique_ptr<Projectile>>::iterator it = m_ProjectileList.begin(); it != m_ProjectileList.end();)
@@ -128,7 +135,7 @@ void ArrowStorm::CollisionCheck()
 		Position CurrentPos = (*it)->GetCurrentPosition();
 
 		// 1. 범위 밖 or 벽에 충돌
-		if (!InRange(CurrentPos) || MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x] == BOARD_OBJECT::WALL)
+		if (!MapManager::InRange(CurrentPos) || MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x] == BOARD_OBJECT::WALL)
 		{
 			RemoveProjectile(it);
 		}
@@ -139,8 +146,7 @@ void ArrowStorm::CollisionCheck()
 			if (HitIndex != -1)
 			{
 				// 데미지 적용
-				m_CreatureArr[HitIndex]->TakeDamage((*it)->GetDamage());
-				AfterHit(HitIndex);
+				ApplyHit(HitIndex, (*it)->GetDamage());
 				it = m_ProjectileList.erase(it);
 			}
 			else
@@ -167,32 +173,15 @@ int ArrowStorm::DidHit(const std::unique_ptr<Projectile>& _Projectile)
 	return -1;
 }
 
-// 체력을 확인하고 죽어야 한다면 맵에서 지우고
-// 인스턴스 삭제해주기
-void ArrowStorm::AfterHit(const int& _Index)
+// 데미지 적용및 덧그려주기
+void ArrowStorm::ApplyHit(const int& _Index, const int _Damage)
 {
+	m_CreatureArr[_Index]->TakeDamage(_Damage);
 	Position CurrentPos = m_CreatureArr[_Index]->GetCurrentPosition();
-	
-	// 죽어야 하는 경우 지우기
-	if (m_CreatureArr[_Index]->GetHp() == 0)
-	{
-		DrawManager::DrawObjectAtPosition(
-			CurrentPos, 
-			MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x]
-		);
-		m_CreatureArr[_Index] = nullptr;
-	}
-
-	// 살았을 경우 화살을 지우고 크리쳐 다시 그려주기
-	else
-	{
-		DrawManager::DrawObjectAtPosition(
-			CurrentPos,
-			m_CreatureArr[_Index]->GetActorObject()
-		);
-	}
+	DrawManager::DrawObjectAtPosition(CurrentPos, m_CreatureArr[_Index]->GetActorObject());
 }
 
+// 리스트에서 투사체 삭제및 덧그리기
 void ArrowStorm::RemoveProjectile(std::list<std::unique_ptr<Projectile>>::iterator& it)
 {
 	Position CurrentPos = (*it)->GetCurrentPosition();
@@ -200,23 +189,35 @@ void ArrowStorm::RemoveProjectile(std::list<std::unique_ptr<Projectile>>::iterat
 	it = m_ProjectileList.erase(it);
 }
 
-///*
-//	이동 못하는 경우
-//	1. 맵 범위 밖
-//	2. m_Board[y][x]가 EMPTY이지 않은경우
-//*/
-//bool ArrowStorm::IsMovableTile(const Position& _Position)
-//{
-//	if (!InRange(_Position))
-//		return false;
-//	if (m_Board[_Position.m_y][_Position.m_x].m_Type != BOARD_OBJECT::EMPTY)
-//		return false;
-//	return true;
-//}
-//
-bool ArrowStorm::InRange(const Position& _Position)
+void ArrowStorm::CommitTick()
 {
-	return (0 <= _Position.m_x && _Position.m_x < BOARD_SIZE::BOARD_WIDTH
-		&& 0 <= _Position.m_y && _Position.m_y < BOARD_SIZE::BOARD_HEIGHT);
+	for (int index = 0; index < m_CreatureArr.size(); ++index)
+	{
+		if (m_CreatureArr[index] == nullptr) continue;
+
+		if (m_CreatureArr[index]->GetHp() == 0)
+		{
+			Position CurrentPos = m_CreatureArr[index]->GetCurrentPosition();
+			DrawManager::DrawObjectAtPosition(CurrentPos, MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x]);
+			m_CreatureArr[index] = nullptr;
+		}	
+	}
 }
 
+bool ArrowStorm::IsGameOver()
+{
+	if (m_CreatureArr[0] == nullptr)
+		return true;
+	return false;
+}
+
+bool ArrowStorm::CreatureExistAtPos(const Position& _Pos)
+{
+	for (int index = 0; index < GetInstance().GetCreatureArr().size(); ++index)
+	{
+		if (GetInstance().GetCreatureArr()[index] == nullptr) continue;
+		if (GetInstance().GetCreatureArr()[index]->GetCurrentPosition() == _Pos)
+			return true;
+	}
+	return false;
+}

@@ -7,8 +7,10 @@
 Slime::Slime(const Position _InitialPos)
 	:Monster(_InitialPos, BOARD_OBJECT::SLIME)
 {
-	m_MoveTimer = std::make_unique<Timer>();
+	m_Hp = SLIME_HP;
 	m_MoveTimer->SetTimer(TIME::SLIME_MOVE_SPEED, std::bind(&Slime::FollowTarget, this));
+	m_AttackTimer->SetTimer(TIME::SLIME_ATTACK_COOL, std::bind(&Slime::MeleeAttack, this));
+	m_MeleeDamage = DEFAULT_DAMAGE;
 }
 
 Slime::~Slime()
@@ -18,7 +20,14 @@ Slime::~Slime()
 
 void Slime::Tick()
 {
-	TryMove();
+	if (Position::Distance(m_Target->GetCurrentPosition(), m_CurrentPosition) > 1)
+	{
+		TryMove();
+	}
+	else
+	{
+		TryAttack();
+	}
 }
 
 void Slime::FollowTarget()
@@ -33,22 +42,21 @@ void Slime::FollowTarget()
 
 Position Slime::GetNextPosition()
 {
-	MarkingsForBFS(true);
+	BOARD_OBJECT BoardCopy[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH];
+	MakeBoardSnapshot(BoardCopy);
 
 	Position TargetPos = m_Target->GetCurrentPosition();
 	Position SlimePos = m_CurrentPosition;
 
-	bool visited[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH]{};
 	std::queue<Position> queue;
 	queue.push(TargetPos);
-	visited[TargetPos.m_y][TargetPos.m_x] = true;
 
 	Position Result = SlimePos;
 	while (!queue.empty())
 	{
 		Position CurrentPos = queue.front(); queue.pop();
 
-		if (SlimePos - CurrentPos == 1)
+		if (Position::Distance(SlimePos, CurrentPos) == 1 && CurrentPos != TargetPos)
 		{
 			Result = CurrentPos;
 			break;
@@ -58,28 +66,26 @@ Position Slime::GetNextPosition()
 		{
 			Position NextPos = CurrentPos + Dir;
 
-			if (!MapManager::IsValidPosition(NextPos)) continue;
-			if (visited[NextPos.m_y][NextPos.m_x]) continue;
-			visited[NextPos.m_y][NextPos.m_x] = true;
+			if (!MapManager::InRange(NextPos)) continue;
+			if (BoardCopy[NextPos.m_y][NextPos.m_x] == BOARD_OBJECT::WALL) continue;
+			BoardCopy[NextPos.m_y][NextPos.m_x] = BOARD_OBJECT::WALL;
 			queue.push(NextPos);
 		}
 	}
 
-	MarkingsForBFS(false);
 	return Result;
 }
 
-void Slime::MarkingsForBFS(bool option)
+void Slime::MakeBoardSnapshot(BOARD_OBJECT(&out)[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH])
 {
-	for (int index = 1; index < ArrowStorm::GetCreatureArr().size(); ++index)
+	std::memcpy(out, MapManager::GetBoard(),
+		sizeof(BOARD_OBJECT) * BOARD_SIZE::BOARD_HEIGHT * BOARD_SIZE::BOARD_WIDTH);
+
+	for (int index = 0; index < ArrowStorm::GetCreatureArr().size(); ++index)
 	{
 		if (ArrowStorm::GetCreatureArr()[index] == nullptr) continue;
 
 		Position CreatruePos = ArrowStorm::GetCreatureArr()[index]->GetCurrentPosition();
-		if (option)
-			MapManager::GetBoard()[CreatruePos.m_y][CreatruePos.m_x] = BOARD_OBJECT::WALL;
-		else
-			MapManager::GetBoard()[CreatruePos.m_y][CreatruePos.m_x] = BOARD_OBJECT::EMPTY;
-		
+		out[CreatruePos.m_y][CreatruePos.m_x] = BOARD_OBJECT::WALL;
 	}
 }

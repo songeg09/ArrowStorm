@@ -4,8 +4,11 @@
 #include <iostream>
 #include <string>
 
-constexpr int PLAYER_HEALTH = 100;
-constexpr int DEFAULT_DAMAGE = 10;
+constexpr int PLAYER_HP = 10;
+constexpr int PLAYER_MP = 10;
+constexpr int SLIME_HP = 3;
+
+constexpr int DEFAULT_DAMAGE = 1;
 
 enum ASPECT_RATIO
 {
@@ -36,6 +39,13 @@ enum BOARD_OBJECT
 	SKELETON,
 	SLIME,
 
+};
+
+enum class UI_ICON
+{
+	HP,
+	MP,
+	BLANK,
 };
 
 enum POPUP_SIZE
@@ -76,15 +86,20 @@ struct Position
 	{
 		return m_x == other.m_x && m_y == other.m_y;
 	}
+	
+	bool operator!=(const Position& other) const
+	{
+		return (m_x != other.m_x || m_y != other.m_y);
+	}
 
 	Position operator+(const Position& other)
 	{
 		return Position(m_x + other.m_x, m_y + other.m_y);
 	}
 
-	int operator-(const Position& other)
+	static int Distance(const Position& p1, Position& p2)
 	{
-		return abs(m_x - other.m_x) + abs(m_y - other.m_y);
+		return abs(p1.m_x - p2.m_x) + abs(p1.m_y - p2.m_y);
 	}
 	
 	Position operator+(const int _Num)
@@ -124,8 +139,11 @@ enum KEY_BOARD
 enum TIME
 {
 	DEFAULT_PROJECTILE_SPEED = 100,
+	
 	SLIME_MOVE_SPEED = 1000,
-	PLAYER_MOVE_SPEED = 500,
+	SLIME_ATTACK_COOL = 2000,
+
+	PLAYER_MOVE_SPEED = 300,
 	DEFAULT_ATTACK_COOL = 1000,
 	DEFAULT_SKILL_COOL = 5000,
 };
