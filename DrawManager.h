@@ -25,7 +25,7 @@ namespace DrawManager
 			switch (_eObject)
 			{
 			case BOARD_OBJECT::WALL:
-				return "¢Ë ";
+				return "¢Ë";
 			case BOARD_OBJECT::CHEST:
 				return "»ó";
 			case BOARD_OBJECT::PLAYER_UP:

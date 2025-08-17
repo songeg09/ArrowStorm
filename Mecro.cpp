@@ -17,3 +17,20 @@ int GetSafeInput(int& Input)
 		return Input;
 	}
 }
+
+BOARD_OBJECT GetArrowObject(const DIRECTION _AmingDir)
+{
+	switch (_AmingDir)
+	{
+	case DIRECTION::UP:
+		return BOARD_OBJECT::ARROW_UP;
+	case DIRECTION::RIGHT:
+		return BOARD_OBJECT::ARROW_RIGHT;
+	case DIRECTION::DOWN:
+		return BOARD_OBJECT::ARROW_DOWN;
+	case DIRECTION::LEFT:
+		return BOARD_OBJECT::ARROW_LEFT;
+	default:
+		return BOARD_OBJECT::ARROW_UP;
+	}
+}

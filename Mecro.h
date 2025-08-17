@@ -120,6 +120,8 @@ enum DIRECTION
 	NEUTRAL,
 };
 
+BOARD_OBJECT GetArrowObject(const DIRECTION _AmingDir);
+
 enum KEY_BOARD
 {
 	W = 119,
@@ -148,24 +150,3 @@ enum TIME
 	DEFAULT_SKILL_COOL = 5000,
 };
 
-
-struct FireRequest
-{
-	Position m_InitialPosition;
-	DIRECTION m_MovingDirection;
-	BOARD_OBJECT m_Object;
-
-	FireRequest()
-	{
-		m_InitialPosition = Position();
-		m_MovingDirection = DIRECTION::NEUTRAL;
-		m_Object = BOARD_OBJECT::EMPTY;
-	}
-
-	FireRequest(const Position _InitialPosition, const DIRECTION _MovingDirection, const BOARD_OBJECT _Object)
-	{
-		m_InitialPosition = _InitialPosition;
-		m_MovingDirection = _MovingDirection;
-		m_Object = _Object;
-	}
-};

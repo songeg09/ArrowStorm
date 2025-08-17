@@ -3,16 +3,19 @@
 
 class Monster : public Creature
 {
-public:
-	Monster(const Position _InitialPosition, const BOARD_OBJECT _ActorObject);
-	virtual ~Monster();
-
 protected:
+	// 멤버 변수
 	Creature* m_Target;
 	std::unique_ptr<class Timer> m_AttackTimer;
 	int m_MeleeDamage;
 
+	// 공격
 	void TryAttack();
 	void MeleeAttack();
+
+public:
+	// 생성자 소멸자
+	Monster(const Position _InitialPosition, const BOARD_OBJECT _ActorObject);
+	virtual ~Monster();
 };
 

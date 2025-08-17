@@ -3,18 +3,19 @@
 
 class Slime : public Monster
 {
-
-public:
-	Slime(const Position _InitialPos);
-	virtual ~Slime();
-
-	virtual void Tick() override;
-
 protected:
+	// 이동
 	void FollowTarget();
 	Position GetNextPosition();
 
-	void MakeBoardSnapshot(BOARD_OBJECT(&out)[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH]);
-	
+public:
+	// 생성자 소멸자
+	Slime(const Position _InitialPos);
+	virtual ~Slime();
+
+	// Tick
+	virtual void Tick() override;
+
+
 };
 

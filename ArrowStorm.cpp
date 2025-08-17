@@ -52,41 +52,17 @@ bool ArrowStorm::LoadGame()
 void ArrowStorm::Initialize()
 {
 	m_CreatureArr.clear();
-	// 벽 그리기
-	std::string Line;
-	for (int y = 0; y < BOARD_SIZE::BOARD_HEIGHT; ++y)
-	{
-		DrawManager::gotoxy(0, y);
-		Line = "";
-		for (int x = 0; x < BOARD_SIZE::BOARD_WIDTH; ++x)
-		{
-			Line += DrawManager::GetObjectIcon(MapManager::GetBoard()[y][x]);
-		}
-		std::cout << Line;
-	}
-	// 아이템 상자 및 출입구 그리기
-
 	
-	// 플레이어 리셋
 	m_CreatureArr.push_back(std::make_unique<Player>(
 		Position(BOARD_SIZE::BOARD_WIDTH / 2, BOARD_SIZE::BOARD_HEIGHT / 2),
 		BOARD_OBJECT::PLAYER_UP
 	));
 
-	// 임시 몬스터
 	m_CreatureArr.push_back(std::make_unique<Slime>(
 		Position(10,3)
 	));
 
-	for (int id = 0; id < m_CreatureArr.size(); ++id)
-	{
-		if (m_CreatureArr[id])
-		{
-			Position CreaturePos = m_CreatureArr[id]->GetCurrentPosition();
-			BOARD_OBJECT CreatureObj = m_CreatureArr[id]->GetActorObject();
-			DrawManager::DrawObjectAtPosition(CreaturePos, CreatureObj);
-		}
-	}
+	MapManager::DrawFullBoard();
 }
 
 void ArrowStorm::Run()

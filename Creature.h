@@ -2,25 +2,23 @@
 #include "Actor.h"
 class Creature : public Actor
 {
+protected:
+	// 멤버 변수
+	int m_Hp; // 각 몬스터별로 고유 값 존재
+
+	// 이동
+	void MoveTowards(const DIRECTION& _Direction) override;
+
 public:
+	// 생성자 소멸자
 	Creature(const Position _InitialPosition, const BOARD_OBJECT _ActorObject);
 	virtual ~Creature();
 
-	virtual void Tick() override;
-
+	// Getter & Setter
 	int GetHp() { return m_Hp; }
-	virtual void TakeDamage(const int _Damage)
-	{
-		m_Hp -= _Damage;
-		if (m_Hp < 0)
-			m_Hp = 0;
-	}
+	virtual void TakeDamage(const int _Damage);
 
-protected:
-	void MoveTowards(const DIRECTION& _Direction) override;
-	bool IsValidPos(const Position& NewPosition);
-
-	int m_Hp = 30;// 임시
-	
+	// Tick
+	virtual void Tick() override;
 };
 

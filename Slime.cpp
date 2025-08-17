@@ -42,8 +42,7 @@ void Slime::FollowTarget()
 
 Position Slime::GetNextPosition()
 {
-	BOARD_OBJECT BoardCopy[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH];
-	MakeBoardSnapshot(BoardCopy);
+	BOARD_OBJECT(&BoardCopy)[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH] = MapManager::MakeSnapshot();
 
 	Position TargetPos = m_Target->GetCurrentPosition();
 	Position SlimePos = m_CurrentPosition;
@@ -74,18 +73,4 @@ Position Slime::GetNextPosition()
 	}
 
 	return Result;
-}
-
-void Slime::MakeBoardSnapshot(BOARD_OBJECT(&out)[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH])
-{
-	std::memcpy(out, MapManager::GetBoard(),
-		sizeof(BOARD_OBJECT) * BOARD_SIZE::BOARD_HEIGHT * BOARD_SIZE::BOARD_WIDTH);
-
-	for (int index = 0; index < ArrowStorm::GetCreatureArr().size(); ++index)
-	{
-		if (ArrowStorm::GetCreatureArr()[index] == nullptr) continue;
-
-		Position CreatruePos = ArrowStorm::GetCreatureArr()[index]->GetCurrentPosition();
-		out[CreatruePos.m_y][CreatruePos.m_x] = BOARD_OBJECT::WALL;
-	}
 }

@@ -5,6 +5,7 @@
 #include "Creature.h"
 #include "Player.h"
 #include "UIManager.h"
+
 #include <memory>
 
 Bow::Bow(Creature* _Owner)
@@ -51,22 +52,5 @@ void Bow::UseSkill()
 	{
 		player->UseMp();
 		UIManager::UpdateMp(player->GetMp());
-	}
-}
-
-BOARD_OBJECT Bow::GetArrowObject(const DIRECTION _AmingDir)
-{
-	switch (_AmingDir)
-	{
-	case DIRECTION::UP:
-		return BOARD_OBJECT::ARROW_UP;
-	case DIRECTION::RIGHT:
-		return BOARD_OBJECT::ARROW_RIGHT;
-	case DIRECTION::DOWN:
-		return BOARD_OBJECT::ARROW_DOWN;
-	case DIRECTION::LEFT:
-		return BOARD_OBJECT::ARROW_LEFT;
-	default:
-		return BOARD_OBJECT::ARROW_UP;
 	}
 }
