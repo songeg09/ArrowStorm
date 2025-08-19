@@ -4,9 +4,15 @@
 #include <iostream>
 #include <string>
 
-constexpr int PLAYER_HP = 10;
-constexpr int PLAYER_MP = 10;
+constexpr int MAX_HP_POTION = 99;
+constexpr int MAX_MP_POTION = 99;
+
+constexpr int PLAYER_MAX_HP = 10;
+constexpr int PLAYER_MAX_MP = 10;
 constexpr int SLIME_HP = 3;
+
+constexpr int SKELETON_HP = 5;
+constexpr int SKELETON_MELEE_DAMAGE = 3;
 
 constexpr int DEFAULT_DAMAGE = 1;
 
@@ -28,6 +34,7 @@ enum BOARD_OBJECT
 	WALL,
 	DOOR,
 	CHEST,
+	BOW,
 	PLAYER_UP,
 	PLAYER_RIGHT,
 	PLAYER_DOWN,
@@ -45,6 +52,7 @@ enum class UI_ICON
 {
 	HP,
 	MP,
+	POTION,
 	BLANK,
 };
 
@@ -64,6 +72,15 @@ enum POPUP_CHOICE
 	cin 버퍼에 문제가 생기지 않도록 하는 함수
 */
 int GetSafeInput(int& input);
+
+enum DIRECTION
+{
+	UP = 0,
+	RIGHT,
+	DOWN,
+	LEFT,
+	NEUTRAL,
+};
 
 struct Position
 {
@@ -97,7 +114,7 @@ struct Position
 		return Position(m_x + other.m_x, m_y + other.m_y);
 	}
 
-	static int Distance(const Position& p1, Position& p2)
+	static int Distance(const Position& p1, const  Position& p2)
 	{
 		return abs(p1.m_x - p2.m_x) + abs(p1.m_y - p2.m_y);
 	}
@@ -107,18 +124,25 @@ struct Position
 		return Position(m_x + _Num, m_y + _Num);
 	}
 
+	// Direction from p1 to p2
+	static DIRECTION GetDirection(const Position& p1, const Position& p2)
+	{
+		int dx = (p1.m_x - p2.m_x);
+		int dy = (p1.m_y - p2.m_y);
+
+		if (abs(dx) < abs(dy))
+		{
+			return (dy > 0) ? DIRECTION::DOWN : DIRECTION::UP;
+		}
+		else
+		{
+			return (dx > 0) ? DIRECTION::RIGHT : DIRECTION::LEFT;
+		}
+	}
+
 };
 
 extern Position Directions[4];
-
-enum DIRECTION
-{
-	UP = 0,
-	RIGHT,
-	DOWN,
-	LEFT,
-	NEUTRAL,
-};
 
 BOARD_OBJECT GetArrowObject(const DIRECTION _AmingDir);
 
@@ -142,11 +166,19 @@ enum TIME
 {
 	DEFAULT_PROJECTILE_SPEED = 100,
 	
-	SLIME_MOVE_SPEED = 1000,
+	SLIME_MOVE_SPEED = 1500,
 	SLIME_ATTACK_COOL = 2000,
+
+	SKELETON_MOVE_SPEED = 1000,
+	SKELETON_ATTACK_COOL = 2000,
 
 	PLAYER_MOVE_SPEED = 300,
 	DEFAULT_ATTACK_COOL = 1000,
 	DEFAULT_SKILL_COOL = 5000,
 };
 
+enum POTION_TYPE
+{
+	HP = 0,
+	MP = 1,
+};

@@ -50,6 +50,12 @@
     <ClCompile Include="UIManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriBow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameManager.h">
@@ -95,6 +101,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UIManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriBow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

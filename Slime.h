@@ -3,10 +3,6 @@
 
 class Slime : public Monster
 {
-protected:
-	// 이동
-	void FollowTarget();
-	Position GetNextPosition();
 
 public:
 	// 생성자 소멸자

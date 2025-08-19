@@ -12,8 +12,9 @@ protected:
 	std::unique_ptr<class Timer> m_AttackTimer;
 	std::unique_ptr<class Timer> m_SkillTimer;
 
+	// 공격 함수
 	void Fire(const DIRECTION _AmingDir);
-	void UseSkill();
+	virtual void UseSkill(const DIRECTION _AmingDir);
 
 public:
 	// 생성자 소멸자
@@ -22,7 +23,7 @@ public:
 	
 	// 발사 관련 함수
 	void TryFire(const DIRECTION _AmingDir);
-	void TrySkill();
+	void TrySkill(const DIRECTION _AmingDir);
 
 	// Getters
 	std::string GetName() { return m_Name; }

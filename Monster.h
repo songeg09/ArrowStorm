@@ -13,6 +13,10 @@ protected:
 	void TryAttack();
 	void MeleeAttack();
 
+	// 이동
+	void FollowTarget();
+	Position GetNextPosition();
+
 public:
 	// 생성자 소멸자
 	Monster(const Position _InitialPosition, const BOARD_OBJECT _ActorObject);

@@ -1,12 +1,15 @@
 #include "ArrowStorm.h"
 #include "DrawManager.h"
 #include "MapManager.h"
+#include "UIManager.h"
 
 #include "Projectile.h"
 #include "Player.h"
 #include "Actor.h"
 #include "Slime.h"
+#include "Skeleton.h"
 #include "Bow.h"
+#include "TriBow.h"
 
 
 ArrowStorm& ArrowStorm::GetInstance()
@@ -42,6 +45,11 @@ void ArrowStorm::NewGame()
 			}
 		}
 	}
+
+	MapManager::GetBoard()[20][20] = BOARD_OBJECT::CHEST;
+	MapManager::GetBoard()[20][23] = BOARD_OBJECT::CHEST;
+	MapManager::GetBoard()[20][25] = BOARD_OBJECT::BOW;
+
 }
 
 bool ArrowStorm::LoadGame()
@@ -58,11 +66,16 @@ void ArrowStorm::Initialize()
 		BOARD_OBJECT::PLAYER_UP
 	));
 
-	m_CreatureArr.push_back(std::make_unique<Slime>(
+	m_CreatureArr.push_back(std::make_unique<Skeleton>(
 		Position(10,3)
 	));
 
+	m_CreatureArr.push_back(std::make_unique<Slime>(
+		Position(20, 3)
+	));
+
 	MapManager::DrawFullBoard();
+	UIManager::DrawUI();
 }
 
 void ArrowStorm::Run()
@@ -74,6 +87,7 @@ void ArrowStorm::Run()
 		Tick();
 		CollisionCheck();
 		CommitTick();
+		ItemCheck();
 
 		if (IsGameOver())
 		{
@@ -196,4 +210,41 @@ bool ArrowStorm::CreatureExistAtPos(const Position& _Pos)
 			return true;
 	}
 	return false;
+}
+
+void ArrowStorm::ItemCheck()
+{
+	if (m_CreatureArr[0] != nullptr)
+	{
+		if (Player* player = dynamic_cast<Player*>(m_CreatureArr[0].get()))
+		{
+			Position Pos = player->GetCurrentPosition();
+			if (MapManager::GetBoard()[Pos.m_y][Pos.m_x] == BOARD_OBJECT::CHEST)
+			{
+				int Type = rand() % 2;
+				player->EarnPotion((POTION_TYPE)Type);
+				MapManager::GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
+			}
+			else if (MapManager::GetBoard()[Pos.m_y][Pos.m_x] == BOARD_OBJECT::BOW)
+			{
+				
+				BowChange(player);
+
+				MapManager::GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
+			}
+		}
+	}
+}
+
+void ArrowStorm::BowChange(Player* player)
+{
+	// Random Bow 만들어야 겠지?
+	std::unique_ptr<Bow> TempBow = std::make_unique<TriBow>(player);
+	std::string Msg = player->GetBow()->GetName() + " -> " + TempBow->GetName();
+	if (DrawManager::DrawConfirmPopup(Msg))
+	{
+		player->SetBow(std::move(TempBow));
+	}
+	// 화면 다시 그리기
+	MapManager::DrawFullBoard();
 }

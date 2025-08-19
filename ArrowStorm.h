@@ -48,6 +48,10 @@ private:
 	void RemoveProjectile(std::list<std::unique_ptr<Projectile>>::iterator& it);
 	int DidHit(const std::unique_ptr<Projectile>& _Projectile);
 	void ApplyHit(const int& _Index, const int _Damage);
+	
+	// 아이템 관련 함수들
+	void ItemCheck();
+	void BowChange(class Player* player);
 
 	// 게임 시작, 로드 ,종료 관리 함수
 	bool IsGameOver();
