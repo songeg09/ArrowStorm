@@ -40,7 +40,7 @@ namespace UIManager {
 	Player* GetPlayerPtr()
 	{
 		Player* player = nullptr;
-		player = dynamic_cast<Player*>(ArrowStorm::GetCreatureArr()[0].get());
+		player = dynamic_cast<Player*>(ArrowStorm::GetInstance().GetCreatureArr()[0].get());
 		return player;
 	}
 

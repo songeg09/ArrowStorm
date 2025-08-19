@@ -38,7 +38,7 @@
     <ClCompile Include="Bow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MapManager.cpp">
+    <ClCompile Include="Map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Slime.cpp">
@@ -91,7 +91,7 @@
     <ClInclude Include="Bow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MapManager.h">
+    <ClInclude Include="Map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Slime.h">

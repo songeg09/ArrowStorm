@@ -1,6 +1,5 @@
 #include "ArrowStorm.h"
 #include "DrawManager.h"
-#include "MapManager.h"
 #include "UIManager.h"
 
 #include "Projectile.h"
@@ -37,18 +36,18 @@ void ArrowStorm::NewGame()
 		{
 			if (y == 0 || x == 0 || y == BOARD_SIZE::BOARD_HEIGHT - 1 || x == BOARD_SIZE::BOARD_WIDTH - 1)
 			{
-				MapManager::GetBoard()[y][x] = BOARD_OBJECT::WALL;
+				m_Map.GetBoard()[y][x] = BOARD_OBJECT::WALL;
 			}
 			else
 			{
-				MapManager::GetBoard()[y][x] = BOARD_OBJECT::EMPTY;
+				m_Map.GetBoard()[y][x] = BOARD_OBJECT::EMPTY;
 			}
 		}
 	}
 
-	MapManager::GetBoard()[20][20] = BOARD_OBJECT::CHEST;
-	MapManager::GetBoard()[20][23] = BOARD_OBJECT::CHEST;
-	MapManager::GetBoard()[20][25] = BOARD_OBJECT::BOW;
+	m_Map.GetBoard()[20][20] = BOARD_OBJECT::CHEST;
+	m_Map.GetBoard()[20][23] = BOARD_OBJECT::CHEST;
+	m_Map.GetBoard()[20][25] = BOARD_OBJECT::BOW;
 
 }
 
@@ -74,7 +73,7 @@ void ArrowStorm::Initialize()
 		Position(20, 3)
 	));
 
-	MapManager::DrawFullBoard();
+	DrawFullBoard();
 	UIManager::DrawUI();
 }
 
@@ -125,7 +124,7 @@ void ArrowStorm::CollisionCheck()
 		Position CurrentPos = (*it)->GetCurrentPosition();
 
 		// 1. 범위 밖 or 벽에 충돌
-		if (!MapManager::InRange(CurrentPos) || MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x] == BOARD_OBJECT::WALL)
+		if (!m_Map.InRange(CurrentPos) || m_Map.GetBoard()[CurrentPos.m_y][CurrentPos.m_x] == BOARD_OBJECT::WALL)
 		{
 			RemoveProjectile(it);
 		}
@@ -168,14 +167,14 @@ void ArrowStorm::ApplyHit(const int& _Index, const int _Damage)
 {
 	m_CreatureArr[_Index]->TakeDamage(_Damage);
 	Position CurrentPos = m_CreatureArr[_Index]->GetCurrentPosition();
-	DrawManager::DrawObjectAtPosition(CurrentPos, m_CreatureArr[_Index]->GetActorObject());
+	m_CreatureArr[_Index]->Render();
 }
 
 // 리스트에서 투사체 삭제및 덧그리기
 void ArrowStorm::RemoveProjectile(std::list<std::unique_ptr<Projectile>>::iterator& it)
 {
 	Position CurrentPos = (*it)->GetCurrentPosition();
-	DrawManager::DrawObjectAtPosition(CurrentPos, MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x]);
+	DrawManager::DrawObjectAtPosition(CurrentPos, m_Map.GetBoard()[CurrentPos.m_y][CurrentPos.m_x]);
 	it = m_ProjectileList.erase(it);
 }
 
@@ -188,7 +187,7 @@ void ArrowStorm::CommitTick()
 		if (m_CreatureArr[index]->GetHp() == 0)
 		{
 			Position CurrentPos = m_CreatureArr[index]->GetCurrentPosition();
-			DrawManager::DrawObjectAtPosition(CurrentPos, MapManager::GetBoard()[CurrentPos.m_y][CurrentPos.m_x]);
+			DrawManager::DrawObjectAtPosition(CurrentPos, m_Map.GetBoard()[CurrentPos.m_y][CurrentPos.m_x]);
 			m_CreatureArr[index] = nullptr;
 		}	
 	}
@@ -219,18 +218,18 @@ void ArrowStorm::ItemCheck()
 		if (Player* player = dynamic_cast<Player*>(m_CreatureArr[0].get()))
 		{
 			Position Pos = player->GetCurrentPosition();
-			if (MapManager::GetBoard()[Pos.m_y][Pos.m_x] == BOARD_OBJECT::CHEST)
+			if (m_Map.GetBoard()[Pos.m_y][Pos.m_x] == BOARD_OBJECT::CHEST)
 			{
 				int Type = rand() % 2;
 				player->EarnPotion((POTION_TYPE)Type);
-				MapManager::GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
+				m_Map.GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
 			}
-			else if (MapManager::GetBoard()[Pos.m_y][Pos.m_x] == BOARD_OBJECT::BOW)
+			else if (m_Map.GetBoard()[Pos.m_y][Pos.m_x] == BOARD_OBJECT::BOW)
 			{
 				
 				BowChange(player);
 
-				MapManager::GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
+				m_Map.GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
 			}
 		}
 	}
@@ -246,5 +245,47 @@ void ArrowStorm::BowChange(Player* player)
 		player->SetBow(std::move(TempBow));
 	}
 	// 화면 다시 그리기
-	MapManager::DrawFullBoard();
+	DrawFullBoard();
+}
+
+void ArrowStorm::DrawFullBoard()
+{
+	m_Map.DrawBoard();
+	
+	// 투사체 그리기
+	for (std::list<std::unique_ptr<Projectile>>::iterator it = m_ProjectileList.begin(); it != m_ProjectileList.end(); ++it)
+	{
+		Position CreaturePos = (*it)->GetCurrentPosition();
+		BOARD_OBJECT CreatureObj = (*it)->GetActorObject();
+		DrawManager::DrawObjectAtPosition(CreaturePos, CreatureObj);
+	}
+
+	// 크리쳐들 그리기
+	for (int id = 0; id < m_CreatureArr.size(); ++id)
+	{
+		if (Creature* Creature = m_CreatureArr[id].get())
+		{
+			Position CreaturePos = Creature->GetCurrentPosition();
+			BOARD_OBJECT CreatureObj = Creature->GetActorObject();
+			DrawManager::DrawObjectAtPosition(CreaturePos, CreatureObj);
+		}
+	}
+}
+
+BOARD_OBJECT(&ArrowStorm::MakeSnapshot())[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH]
+{
+	static BoardArr Snapshot{};
+
+	std::memcpy(Snapshot, m_Map.GetBoard(),
+		sizeof(BOARD_OBJECT)* BOARD_SIZE::BOARD_HEIGHT* BOARD_SIZE::BOARD_WIDTH);
+
+	for (int index = 0; index < ArrowStorm::GetInstance().GetCreatureArr().size(); ++index)
+	{
+		if (ArrowStorm::GetInstance().GetCreatureArr()[index] == nullptr) continue;
+
+		Position CreatruePos = ArrowStorm::GetInstance().GetCreatureArr()[index]->GetCurrentPosition();
+		Snapshot[CreatruePos.m_y][CreatruePos.m_x] = BOARD_OBJECT::WALL;
+	}
+
+	return Snapshot;
 }

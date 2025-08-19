@@ -2,12 +2,11 @@
 #include "ArrowStorm.h"
 #include "Timer.h"
 #include <queue>
-#include "MapManager.h"
 
 Monster::Monster(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 	:Creature(_InitialPosition, _ActorObject)
 {
-	m_Target = ArrowStorm::GetCreatureArr()[0].get();
+	m_Target = ArrowStorm::GetInstance().GetCreatureArr()[0].get();
 	m_AttackTimer = std::make_unique<Timer>();
 }
 
@@ -41,7 +40,7 @@ void Monster::FollowTarget()
 
 Position Monster::GetNextPosition()
 {
-	BOARD_OBJECT(&BoardCopy)[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH] = MapManager::MakeSnapshot();
+	BOARD_OBJECT(&BoardCopy)[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH] = ArrowStorm::GetInstance().MakeSnapshot();
 
 	Position TargetPos = m_Target->GetCurrentPosition();
 	Position SlimePos = m_CurrentPosition;
@@ -64,7 +63,7 @@ Position Monster::GetNextPosition()
 		{
 			Position NextPos = CurrentPos + Dir;
 
-			if (!MapManager::InRange(NextPos)) continue;
+			if (!ArrowStorm::GetInstance().GetMap().InRange(NextPos)) continue;
 			if (BoardCopy[NextPos.m_y][NextPos.m_x] == BOARD_OBJECT::WALL) continue;
 			BoardCopy[NextPos.m_y][NextPos.m_x] = BOARD_OBJECT::WALL;
 			queue.push(NextPos);

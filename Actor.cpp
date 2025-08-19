@@ -1,6 +1,7 @@
 #include "Actor.h"
 #include "DrawManager.h"
-#include "MapManager.h"
+#include "ArrowStorm.h"
+#include "Map.h"
 #include "Timer.h"
 
 Actor::Actor(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
@@ -25,19 +26,20 @@ void Actor::Redraw(Position& _NewPosition)
 {
 	DrawManager::DrawObjectAtPosition(
 		m_CurrentPosition, 
-		MapManager::GetInstance().GetBoard()[m_CurrentPosition.m_y][m_CurrentPosition.m_x]
+		ArrowStorm::GetInstance().GetMap().GetBoard()[m_CurrentPosition.m_y][m_CurrentPosition.m_x]
 	);
 	m_CurrentPosition = _NewPosition;
-	DrawManager::DrawObjectAtPosition(m_CurrentPosition, m_ActorObject);
-}
-
-void Actor::Tick() 
-{
-	TryMove();
+	Render();
 }
 
 void Actor::TryMove()
 {
 	m_MoveTimer->CheckTimer();
+}
+
+// 자기 자신의 정보를 렌더
+void Actor::Render()
+{
+	DrawManager::DrawObjectAtPosition(m_CurrentPosition, m_ActorObject);
 }
 

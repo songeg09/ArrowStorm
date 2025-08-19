@@ -1,9 +1,6 @@
 #include "Slime.h"
 #include "Timer.h"
 
-#include "ArrowStorm.h"
-#include "MapManager.h"
-
 Slime::Slime(const Position _InitialPos)
 	:Monster(_InitialPos, BOARD_OBJECT::SLIME)
 {

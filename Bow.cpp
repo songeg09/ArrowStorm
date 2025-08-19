@@ -33,7 +33,7 @@ void Bow::Fire(const DIRECTION _AmingDir)
 {
 	Position InitialPos = m_Owner->GetCurrentPosition() + Directions[_AmingDir];
 	BOARD_OBJECT Object = GetArrowObject(_AmingDir);
-	ArrowStorm::GetProjectileList().emplace_back(std::make_unique<Projectile>(InitialPos, Object, _AmingDir));
+	ArrowStorm::GetInstance().GetProjectileList().emplace_back(std::make_unique<Projectile>(InitialPos, Object, _AmingDir));
 }
 
 void Bow::TrySkill(const DIRECTION _AmingDir)

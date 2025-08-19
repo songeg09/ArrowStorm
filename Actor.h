@@ -27,5 +27,8 @@ public:
 	// Tick
 	virtual void Tick() = 0;
 
+	// Render
+	void Render();
+
 };
 

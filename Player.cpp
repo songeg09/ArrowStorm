@@ -15,8 +15,6 @@ Player::Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 	m_FacingDir = DIRECTION::UP;
 	m_MoveTimer->SetTimer(TIME::PLAYER_MOVE_SPEED, std::bind(&Player::MoveTowards, this, std::ref(m_MovingDir)));
 	m_Bow = std::make_unique<Bow>(this); // юс╫ц
-
-	//UIManager::DrawUI();
 }
 
 Player::~Player()

@@ -1,6 +1,6 @@
 #pragma once
 #include "Actor.h"
-class Creature : public Actor
+class Creature abstract : public Actor
 {
 protected:
 	// ¸â¹ö º¯¼ö
@@ -17,8 +17,5 @@ public:
 	// Getter & Setter
 	int GetHp() { return m_Hp; }
 	virtual void TakeDamage(const int _Damage);
-
-	// Tick
-	virtual void Tick() override;
 };
 
