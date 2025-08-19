@@ -28,7 +28,7 @@ void Skeleton::Tick()
 	else if (IsAligned())
 	{
 		// 거리가 멀 경우 화살 발사
-		m_Bow->TryFire(Position::GetDirection(m_Target->GetCurrentPosition(), m_CurrentPosition));
+		m_Bow->TryFire(Position::GetDirection(m_CurrentPosition, m_Target->GetCurrentPosition()));
 	}
 	else
 	{

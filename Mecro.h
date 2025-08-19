@@ -132,11 +132,11 @@ struct Position
 
 		if (abs(dx) < abs(dy))
 		{
-			return (dy > 0) ? DIRECTION::DOWN : DIRECTION::UP;
+			return (dy > 0) ? DIRECTION::UP : DIRECTION::DOWN;
 		}
 		else
 		{
-			return (dx > 0) ? DIRECTION::RIGHT : DIRECTION::LEFT;
+			return (dx > 0) ? DIRECTION::LEFT : DIRECTION::RIGHT;
 		}
 	}
 
@@ -172,7 +172,7 @@ enum TIME
 	SKELETON_MOVE_SPEED = 1000,
 	SKELETON_ATTACK_COOL = 2000,
 
-	PLAYER_MOVE_SPEED = 300,
+	PLAYER_MOVE_SPEED = 150,
 	DEFAULT_ATTACK_COOL = 1000,
 	DEFAULT_SKILL_COOL = 5000,
 };
@@ -181,4 +181,11 @@ enum POTION_TYPE
 {
 	HP = 0,
 	MP = 1,
+};
+
+enum MONSTER_TYPE
+{
+	SLIME_TYPE = 0,
+	SKELETON_TYPE = 1,
+	COUNT
 };

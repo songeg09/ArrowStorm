@@ -30,6 +30,8 @@ namespace DrawManager
 				return "»ó";
 			case BOARD_OBJECT::BOW:
 				return "»ó";
+			case BOARD_OBJECT::DOOR:
+				return "¹®";
 			case BOARD_OBJECT::PLAYER_UP:
 				return "A";
 			case BOARD_OBJECT::PLAYER_RIGHT:

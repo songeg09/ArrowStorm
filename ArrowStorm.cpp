@@ -29,50 +29,26 @@ ArrowStorm::~ArrowStorm()
 
 void ArrowStorm::NewGame()
 {
-	// 임시 초기화
-	for (int y = 0; y < BOARD_SIZE::BOARD_HEIGHT; ++y)
-	{
-		for (int x = 0; x < BOARD_SIZE::BOARD_WIDTH; ++x)
-		{
-			if (y == 0 || x == 0 || y == BOARD_SIZE::BOARD_HEIGHT - 1 || x == BOARD_SIZE::BOARD_WIDTH - 1)
-			{
-				m_Map.GetBoard()[y][x] = BOARD_OBJECT::WALL;
-			}
-			else
-			{
-				m_Map.GetBoard()[y][x] = BOARD_OBJECT::EMPTY;
-			}
-		}
-	}
+	// 초기화
+	m_CreatureArr.clear();
+	m_ProjectileList.clear();
 
-	m_Map.GetBoard()[20][20] = BOARD_OBJECT::CHEST;
-	m_Map.GetBoard()[20][23] = BOARD_OBJECT::CHEST;
-	m_Map.GetBoard()[20][25] = BOARD_OBJECT::BOW;
-
+	m_Map.LoadMap("Map_Start");
+	m_CreatureArr.push_back(std::make_unique<Player>(Position(BOARD_SIZE::BOARD_WIDTH / 2, BOARD_SIZE::BOARD_HEIGHT / 2), BOARD_OBJECT::PLAYER_UP));
 }
 
 bool ArrowStorm::LoadGame()
 {
+	// 초기화
+	m_CreatureArr.clear();
+	m_ProjectileList.clear();
+
 	return false;
 }
 
 void ArrowStorm::Initialize()
 {
-	m_CreatureArr.clear();
-	
-	m_CreatureArr.push_back(std::make_unique<Player>(
-		Position(BOARD_SIZE::BOARD_WIDTH / 2, BOARD_SIZE::BOARD_HEIGHT / 2),
-		BOARD_OBJECT::PLAYER_UP
-	));
-
-	m_CreatureArr.push_back(std::make_unique<Skeleton>(
-		Position(10,3)
-	));
-
-	m_CreatureArr.push_back(std::make_unique<Slime>(
-		Position(20, 3)
-	));
-
+	GenerateMonster();
 	DrawFullBoard();
 	UIManager::DrawUI();
 }
@@ -87,6 +63,7 @@ void ArrowStorm::Run()
 		CollisionCheck();
 		CommitTick();
 		ItemCheck();
+		MapChangeCheck();
 
 		if (IsGameOver())
 		{
@@ -274,7 +251,7 @@ void ArrowStorm::DrawFullBoard()
 
 BOARD_OBJECT(&ArrowStorm::MakeSnapshot())[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH]
 {
-	static BoardArr Snapshot{};
+	static BOARD_OBJECT Snapshot[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH]{};
 
 	std::memcpy(Snapshot, m_Map.GetBoard(),
 		sizeof(BOARD_OBJECT)* BOARD_SIZE::BOARD_HEIGHT* BOARD_SIZE::BOARD_WIDTH);
@@ -288,4 +265,93 @@ BOARD_OBJECT(&ArrowStorm::MakeSnapshot())[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::
 	}
 
 	return Snapshot;
+}
+
+void ArrowStorm::GenerateMonster()
+{
+	int NumOfMonsters = (rand() % 5) + 5; //최소 다섯마리
+
+	for (int i = 0; i < NumOfMonsters; ++i)
+	{
+		int MonsterType = rand() % MONSTER_TYPE::COUNT;
+		Position InitialPos = GetRandomePos();
+		switch ((MONSTER_TYPE)MonsterType)
+		{
+		case MONSTER_TYPE::SLIME_TYPE:
+			m_CreatureArr.push_back(std::make_unique<Slime>(InitialPos));
+			break;
+		case MONSTER_TYPE::SKELETON_TYPE:
+			m_CreatureArr.push_back(std::make_unique<Skeleton>(InitialPos));
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+Position ArrowStorm::GetRandomePos()
+{
+	int temp_x;
+	int temp_y;
+	while (1)
+	{
+		temp_x = rand() % BOARD_SIZE::BOARD_WIDTH;
+		temp_y = rand() % BOARD_SIZE::BOARD_HEIGHT;
+
+		if (!m_Map.IsValidPos(Position(temp_x, temp_y))) continue;
+		if (CreatureExistAtPos(Position(temp_x, temp_y))) continue;
+		if (Position::Distance(Position(temp_x, temp_y), m_CreatureArr[0]->GetCurrentPosition()) < 5) continue;
+
+		return Position(temp_x, temp_y);
+	}
+
+}
+
+void ArrowStorm::MapChangeCheck()
+{
+	if (m_CreatureArr[0] == nullptr) return;
+	
+	Position Pos = m_CreatureArr[0]->GetCurrentPosition();
+	if (m_Map.GetBoard()[Pos.m_y][Pos.m_x] != BOARD_OBJECT::DOOR)return;
+
+	for (Door& Door : m_Map.GetDoors())
+	{
+		if (Door.m_Name == "X") continue;
+		if (Door.m_Position != Pos) continue;
+
+		LoadNextMap(Door);
+		return;
+	}
+}
+
+void ArrowStorm::LoadNextMap(Door _Door)
+{
+	m_Map.LoadMap(_Door.m_Name);
+	m_ProjectileList.clear();
+	m_CreatureArr.resize(1);
+	RelocatePlayer(_Door.m_Position);
+	GenerateMonster();
+	DrawFullBoard();
+}
+
+void ArrowStorm::RelocatePlayer(Position _Pos)
+{
+	if (_Pos.m_x == 0)
+	{
+		_Pos.m_x = BOARD_SIZE::BOARD_WIDTH - 2;
+	}
+	else if (_Pos.m_x == BOARD_SIZE::BOARD_WIDTH - 1)
+	{
+		_Pos.m_x = 1;
+	}
+	else if (_Pos.m_y == 0)
+	{
+		_Pos.m_y = BOARD_SIZE::BOARD_HEIGHT - 2;
+	}
+	else if (_Pos.m_y == BOARD_SIZE::BOARD_HEIGHT - 1)
+	{
+		_Pos.m_y = 1;
+	}
+
+	m_CreatureArr[0]->SetCurrentPosition(_Pos);
 }

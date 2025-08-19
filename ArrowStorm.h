@@ -33,11 +33,18 @@ private:
 	void ItemCheck();
 	void BowChange(class Player* player);
 
+	// 맵 관련 함수들
+	void LoadNextMap(Door _Door);
+	void MapChangeCheck();
+	void RelocatePlayer(Position _Pos);
+
 	// 게임 시작, 로드 ,종료 관리 함수
 	bool IsGameOver();
 
 	// 유틸리티 함수
 	void DrawFullBoard();
+	void GenerateMonster();
+	Position GetRandomePos();
 
 public:
 	static ArrowStorm& GetInstance();
