@@ -10,7 +10,7 @@
 
 Bow::Bow(Creature* _Owner)
 {
-	m_Name = "�⺻ Ȱ";
+	m_Name = "Basic_Bow";
 	m_Owner = _Owner;
 	m_AttackTimer = std::make_unique<Timer>();
 	m_AttackTimer->SetTimer(TIME::DEFAULT_ATTACK_COOL, std::bind(&Bow::Fire,this,std::ref(m_AmingDir)));

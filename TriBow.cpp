@@ -7,7 +7,7 @@
 TriBow::TriBow(class Creature* _Owner)
 	:Bow(_Owner)
 {
-	m_Name = "트리플 활";
+	m_Name = "Triple_Bow";
 }
 
 TriBow::~TriBow()

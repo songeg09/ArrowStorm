@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <list>
+#include <fstream>
 
 // ΩÃ±€≈Ê
 class ArrowStorm
@@ -45,6 +46,8 @@ private:
 	void DrawFullBoard();
 	void GenerateMonster();
 	Position GetRandomePos();
+	void LoadPlayer(std::fstream& load);
+	void Init();
 
 public:
 	static ArrowStorm& GetInstance();
@@ -54,6 +57,7 @@ public:
 	bool LoadGame();
 	void Initialize();
 	void Run();
+	void SaveGame();
 
 	// Getter
 	std::list<std::unique_ptr<Projectile>>& GetProjectileList()

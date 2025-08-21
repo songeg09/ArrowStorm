@@ -3,6 +3,7 @@
 #include "Timer.h"
 #include "Bow.h"
 #include "UIManager.h"
+#include "ArrowStorm.h"
 
 Player::Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 	: Creature(_InitialPosition, _ActorObject)
@@ -109,6 +110,9 @@ void Player::HandleInput()
 			break;
 		case KEY_BOARD::TWO:
 			TryUsePotion(POTION_TYPE::MP);
+			break;
+		case KEY_BOARD::ESCAPE:
+			ArrowStorm::GetInstance().SaveGame();
 			break;
 		default:
 			break;

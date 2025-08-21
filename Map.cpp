@@ -54,6 +54,7 @@ void Map::DrawBoard()
 
 void Map::LoadMap(std::string _MapName)
 {
+	m_Name = _MapName;
 	_MapName = "Maps/" + _MapName + ".txt";
 	std::ifstream load(_MapName);
 

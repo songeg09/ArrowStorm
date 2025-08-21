@@ -22,6 +22,7 @@ struct Door
 class Map
 {
 private:
+	std::string m_Name;
 	BOARD_OBJECT m_Board[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH];
 	Door m_Doors[4]; // »ó¿ìÇÏÁÂ
 
@@ -39,7 +40,7 @@ public:
 
 	// Getters
 	Door (& GetDoors())[4] { return m_Doors; }
-
 	BOARD_OBJECT GetBoardObject(char _MapCell);
+	std::string GetName() { return m_Name; }
 };
 

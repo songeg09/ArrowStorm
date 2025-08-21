@@ -11,6 +11,8 @@
 #include "TriBow.h"
 
 
+
+
 ArrowStorm& ArrowStorm::GetInstance()
 {
 	static ArrowStorm ArrowStorm;
@@ -27,23 +29,88 @@ ArrowStorm::~ArrowStorm()
 
 }
 
-void ArrowStorm::NewGame()
+void ArrowStorm::Init()
 {
 	// 초기화
 	m_CreatureArr.clear();
 	m_ProjectileList.clear();
 
-	m_Map.LoadMap("Map_Start");
 	m_CreatureArr.push_back(std::make_unique<Player>(Position(BOARD_SIZE::BOARD_WIDTH / 2, BOARD_SIZE::BOARD_HEIGHT / 2), BOARD_OBJECT::PLAYER_UP));
+}
+
+void ArrowStorm::NewGame()
+{
+	Init();
+	m_Map.LoadMap("Map_Start");
 }
 
 bool ArrowStorm::LoadGame()
 {
-	// 초기화
-	m_CreatureArr.clear();
-	m_ProjectileList.clear();
+	Init();
 
-	return false;
+	std::fstream load("Save.txt");
+	if (!load.is_open()) return false;
+
+	LoadPlayer(load);
+	return true;
+}
+
+void ArrowStorm::LoadPlayer(std::fstream& load)
+{
+	std::string tmpStr;
+	int tmp1, tmp2;
+	
+	if (Player* player = dynamic_cast<Player*>(m_CreatureArr[0].get()))
+	{
+		// 맵 로드
+		load >> tmpStr;
+		m_Map.LoadMap(tmpStr);
+
+		// 플레이어 위치 설정
+		load >> tmp1 >> tmp2;
+		player->SetCurrentPosition(Position(tmp1, tmp2));
+
+		// 활 로드 *****
+		load >> tmpStr;
+
+		// Hp 및 Mp 로드
+		load >> tmp1 >> tmp2;
+		player->SetHp(tmp1);
+		player->SetMp(tmp2);
+
+		// 포션 수 로드
+		load >> tmp1 >> tmp2;
+		player->SetHpPotion(tmp1);
+		player->SetMpPotion(tmp2);
+	}
+
+	load.close();
+}
+
+void ArrowStorm::SaveGame()
+{
+	std::ofstream save("Save.txt", std::ios::trunc);
+
+	if (Player* player = dynamic_cast<Player*>(m_CreatureArr[0].get()))
+	{
+		// 맵 이름 저장
+		save << m_Map.GetName() << std::endl;
+		// 위치 저장
+		save << player->GetCurrentPosition().m_x << " " << player->GetCurrentPosition().m_y << std::endl;;
+		// 활 이름 저장
+		save << player->GetBow()->GetName() << std::endl;
+		// Hp 및 Mp 저장
+		save << player->GetHp() << " " << player->GetMp() << std::endl;
+		// 포션 수 저장
+		save << player->GetHpPotion() << " " << player->GetMpPotion() << std::endl;;
+	}
+
+	save.close();
+
+	if (DrawManager::DrawConfirmPopup("저장을 완료하였습니다. 게임을 종료하시겠습니까?"))
+		return;
+
+	DrawFullBoard();
 }
 
 void ArrowStorm::Initialize()

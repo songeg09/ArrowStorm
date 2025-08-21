@@ -35,8 +35,11 @@ public:
 	void SetBow(std::unique_ptr<Bow> _NewBow);
 	void UseMp();
 	int GetMp() { return m_Mp; }
+	void SetMp(int _Mp) { m_Mp = _Mp; }
 	int GetHpPotion() { return m_HpPotion; }
+	void SetHpPotion(int _HpPotion) { m_HpPotion = _HpPotion; }
 	int GetMpPotion() { return m_MpPotion; }
+	void SetMpPotion(int _MpPotion) { m_MpPotion = _MpPotion; }
 	void EarnPotion(POTION_TYPE _PotionType);
 
 	// Tick

@@ -16,6 +16,7 @@ public:
 
 	// Getter & Setter
 	int GetHp() { return m_Hp; }
+	void SetHp(int _Hp) { m_Hp = _Hp; }
 	virtual void TakeDamage(const int _Damage);
 };
 

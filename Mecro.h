@@ -159,7 +159,8 @@ enum KEY_BOARD
 	I = 105,
 	J = 106, 
 	K = 107,
-	L = 108
+	L = 108,
+	ESCAPE = 27,
 };
 
 enum TIME
