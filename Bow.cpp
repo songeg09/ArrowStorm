@@ -8,14 +8,19 @@
 
 #include <memory>
 
-Bow::Bow(Creature* _Owner)
+Bow::Bow()
 {
 	m_Name = "Basic_Bow";
-	m_Owner = _Owner;
 	m_AttackTimer = std::make_unique<Timer>();
-	m_AttackTimer->SetTimer(TIME::DEFAULT_ATTACK_COOL, std::bind(&Bow::Fire,this,std::ref(m_AmingDir)));
+	m_AttackTimer->SetTimer(TIME::DEFAULT_ATTACK_COOL, std::bind(&Bow::Fire, this, std::ref(m_AmingDir)));
 	m_SkillTimer = std::make_unique<Timer>();
 	m_SkillTimer->SetTimer(TIME::DEFAULT_SKILL_COOL, std::bind(&Bow::UseSkill, this, std::ref(m_AmingDir)));
+}
+
+Bow::Bow(Creature* _Owner)
+	:Bow()
+{
+	m_Owner = _Owner;
 }
 
 Bow::~Bow()

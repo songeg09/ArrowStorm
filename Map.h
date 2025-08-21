@@ -1,46 +1,42 @@
 #pragma once
 #include "Mecro.h"
+#include <vector>
 
-struct Door
-{
-	std::string m_Name;
-	Position m_Position;
-
-	Door()
-	{
-		m_Name = "X";
-		m_Position = Position(-1, -1);
-	}
-
-	Door(std::string _Name, Position _Position)
-	{
-		m_Name = _Name;
-		m_Position = _Position;
-	}
-};
+extern Position Doors[4];
 
 class Map
 {
 private:
+	int m_TotalMapNum;
+	int m_CurMapIndex;
+
 	std::string m_Name;
-	BOARD_OBJECT m_Board[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH];
-	Door m_Doors[4]; // 상우하좌
+	std::vector<std::vector<std::vector<int>>> m_Maps;
+
+	void LoadMap(int index, std::string filename);
+
+	// 유틸리티 함수
+	BOARD_OBJECT IntToBO(int _Input);
 
 public:
 	Map();
 	~Map();
 
-	BOARD_OBJECT(*GetBoard())[BOARD_SIZE::BOARD_WIDTH];
 	bool IsValidPos(const Position& Pos);
 	bool InRange(const Position& _Position);
 	void DrawBoard(); // 크리쳐&투사체 포함
 
-	// 로드
-	void LoadMap(std::string _MapName);
+	// 로드 및 세이브
+	void LoadMapsForNewGame();
+	bool LoadMapsToContinue();
+	void SaveMapInfo();
+	
 
-	// Getters
-	Door (& GetDoors())[4] { return m_Doors; }
-	BOARD_OBJECT GetBoardObject(char _MapCell);
+	// Getters & Setters
+	BOARD_OBJECT GetBoardObject(int x, int y) { return IntToBO(m_Maps[m_CurMapIndex][y][x]); }
+	std::vector<std::vector<int>>& GetBoard() { return m_Maps[m_CurMapIndex]; }
 	std::string GetName() { return m_Name; }
+	int GetCurMapIndex() { return m_CurMapIndex; }
+	void SetCurMapIndex(int _CurMapIndex) { m_CurMapIndex = _CurMapIndex; }
 };
 

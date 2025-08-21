@@ -25,8 +25,8 @@ void Actor::MoveTowards(const DIRECTION& _Direction)
 void Actor::Redraw(Position& _NewPosition)
 {
 	DrawManager::DrawObjectAtPosition(
-		m_CurrentPosition, 
-		ArrowStorm::GetInstance().GetMap().GetBoard()[m_CurrentPosition.m_y][m_CurrentPosition.m_x]
+		m_CurrentPosition,
+		ArrowStorm::GetInstance().GetMap().GetBoardObject(m_CurrentPosition.m_x, m_CurrentPosition.m_y)
 	);
 	m_CurrentPosition = _NewPosition;
 	Render();

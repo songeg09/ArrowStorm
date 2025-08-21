@@ -32,9 +32,9 @@ enum BOARD_OBJECT
 {
 	EMPTY,
 	WALL,
-	DOOR,
 	CHEST,
 	BOW,
+	DOOR,
 	PLAYER_UP,
 	PLAYER_RIGHT,
 	PLAYER_DOWN,
@@ -182,6 +182,13 @@ enum POTION_TYPE
 {
 	HP = 0,
 	MP = 1,
+};
+
+enum BOW_TYPE
+{
+	BASIC = 0,
+	TRIPLE,
+	BOW_TYPE_COUNT,
 };
 
 enum MONSTER_TYPE

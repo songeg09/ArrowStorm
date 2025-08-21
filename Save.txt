@@ -1,5 +1,5 @@
 Map_TwoRoom
-2 9
-Triple_Bow
-7 10
-0 0
+40 21
+Basic_Bow
+10 10
+1 1

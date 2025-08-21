@@ -18,6 +18,7 @@ protected:
 
 public:
 	// 持失切 社瑚切
+	Bow();
 	Bow(class Creature* _Owner);
 	virtual ~Bow();
 	
@@ -25,7 +26,9 @@ public:
 	void TryFire(const DIRECTION _AmingDir);
 	void TrySkill(const DIRECTION _AmingDir);
 
-	// Getters
+	// Getters & Setter
 	std::string GetName() { return m_Name; }
+	void SetOwner(Creature* _Owner) { m_Owner = _Owner; }
+	virtual BOW_TYPE GetType() const { return BOW_TYPE::BASIC; }
 };
 

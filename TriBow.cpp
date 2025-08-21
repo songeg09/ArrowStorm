@@ -4,6 +4,12 @@
 #include "Creature.h"
 #include "Projectile.h"
 
+TriBow::TriBow()
+	: Bow()
+{
+	m_Name = "Triple_Bow";
+}
+
 TriBow::TriBow(class Creature* _Owner)
 	:Bow(_Owner)
 {

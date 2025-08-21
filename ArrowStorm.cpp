@@ -32,6 +32,7 @@ ArrowStorm::~ArrowStorm()
 void ArrowStorm::Init()
 {
 	// 초기화
+	m_EndGame = false;
 	m_CreatureArr.clear();
 	m_ProjectileList.clear();
 
@@ -41,37 +42,36 @@ void ArrowStorm::Init()
 void ArrowStorm::NewGame()
 {
 	Init();
-	m_Map.LoadMap("Map_Start");
+	m_Map.SetCurMapIndex(0);
+	m_Map.LoadMapsForNewGame();
 }
 
 bool ArrowStorm::LoadGame()
 {
 	Init();
+	
+	if(!m_Map.LoadMapsToContinue() || !LoadPlayerInfo())
+		return false;
 
-	std::fstream load("Save.txt");
-	if (!load.is_open()) return false;
-
-	LoadPlayer(load);
 	return true;
 }
 
-void ArrowStorm::LoadPlayer(std::fstream& load)
+bool ArrowStorm::LoadPlayerInfo()
 {
-	std::string tmpStr;
+	std::fstream load("Saves/Player_Save.txt");
+	if (!load.is_open()) return false;
+
 	int tmp1, tmp2;
 	
 	if (Player* player = dynamic_cast<Player*>(m_CreatureArr[0].get()))
 	{
-		// 맵 로드
-		load >> tmpStr;
-		m_Map.LoadMap(tmpStr);
-
 		// 플레이어 위치 설정
 		load >> tmp1 >> tmp2;
 		player->SetCurrentPosition(Position(tmp1, tmp2));
 
 		// 활 로드 *****
-		load >> tmpStr;
+		load >> tmp1;
+		LoadBow((BOW_TYPE)tmp1);
 
 		// Hp 및 Mp 로드
 		load >> tmp1 >> tmp2;
@@ -85,32 +85,41 @@ void ArrowStorm::LoadPlayer(std::fstream& load)
 	}
 
 	load.close();
+
+	return true;
 }
 
 void ArrowStorm::SaveGame()
 {
-	std::ofstream save("Save.txt", std::ios::trunc);
+	SavePlayerInfo();
+	m_Map.SaveMapInfo();
+	
+	std::string Msg = "저장 성공! 게임을 종료하시겠습니까?";
+	if (DrawManager::DrawConfirmPopup(Msg))
+	{
+		m_EndGame = true;
+		return;
+	}
+		
+	DrawFullBoard();
+}
+
+void ArrowStorm::SavePlayerInfo()
+{
+	std::ofstream save("Saves/Player_Save.txt", std::ios::trunc);
 
 	if (Player* player = dynamic_cast<Player*>(m_CreatureArr[0].get()))
 	{
-		// 맵 이름 저장
-		save << m_Map.GetName() << std::endl;
 		// 위치 저장
 		save << player->GetCurrentPosition().m_x << " " << player->GetCurrentPosition().m_y << std::endl;;
 		// 활 이름 저장
-		save << player->GetBow()->GetName() << std::endl;
+		save << player->GetBow()->GetType() << std::endl;
 		// Hp 및 Mp 저장
 		save << player->GetHp() << " " << player->GetMp() << std::endl;
 		// 포션 수 저장
 		save << player->GetHpPotion() << " " << player->GetMpPotion() << std::endl;;
 	}
-
 	save.close();
-
-	if (DrawManager::DrawConfirmPopup("저장을 완료하였습니다. 게임을 종료하시겠습니까?"))
-		return;
-
-	DrawFullBoard();
 }
 
 void ArrowStorm::Initialize()
@@ -134,7 +143,7 @@ void ArrowStorm::Run()
 
 		if (IsGameOver())
 		{
-			DrawManager::DrawInfoPopup("Game Over!");
+			
 			return;
 		}
 	}
@@ -218,7 +227,7 @@ void ArrowStorm::ApplyHit(const int& _Index, const int _Damage)
 void ArrowStorm::RemoveProjectile(std::list<std::unique_ptr<Projectile>>::iterator& it)
 {
 	Position CurrentPos = (*it)->GetCurrentPosition();
-	DrawManager::DrawObjectAtPosition(CurrentPos, m_Map.GetBoard()[CurrentPos.m_y][CurrentPos.m_x]);
+	DrawManager::DrawObjectAtPosition(CurrentPos, m_Map.GetBoardObject(CurrentPos.m_x, CurrentPos.m_y));
 	it = m_ProjectileList.erase(it);
 }
 
@@ -231,7 +240,7 @@ void ArrowStorm::CommitTick()
 		if (m_CreatureArr[index]->GetHp() == 0)
 		{
 			Position CurrentPos = m_CreatureArr[index]->GetCurrentPosition();
-			DrawManager::DrawObjectAtPosition(CurrentPos, m_Map.GetBoard()[CurrentPos.m_y][CurrentPos.m_x]);
+			DrawManager::DrawObjectAtPosition(CurrentPos, m_Map.GetBoardObject(CurrentPos.m_x, CurrentPos.m_y));
 			m_CreatureArr[index] = nullptr;
 		}	
 	}
@@ -240,8 +249,12 @@ void ArrowStorm::CommitTick()
 bool ArrowStorm::IsGameOver()
 {
 	if (m_CreatureArr[0] == nullptr)
-		return true;
-	return false;
+	{
+		m_EndGame = true;
+		DrawManager::DrawInfoPopup("Game Over!");
+	}
+		
+	return m_EndGame;
 }
 
 bool ArrowStorm::CreatureExistAtPos(const Position& _Pos)
@@ -262,34 +275,65 @@ void ArrowStorm::ItemCheck()
 		if (Player* player = dynamic_cast<Player*>(m_CreatureArr[0].get()))
 		{
 			Position Pos = player->GetCurrentPosition();
-			if (m_Map.GetBoard()[Pos.m_y][Pos.m_x] == BOARD_OBJECT::CHEST)
+			if (m_Map.GetBoardObject(Pos.m_x, Pos.m_y) == BOARD_OBJECT::CHEST)
 			{
 				int Type = rand() % 2;
 				player->EarnPotion((POTION_TYPE)Type);
 				m_Map.GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
 			}
-			else if (m_Map.GetBoard()[Pos.m_y][Pos.m_x] == BOARD_OBJECT::BOW)
+			else if (m_Map.GetBoardObject(Pos.m_x, Pos.m_y) == BOARD_OBJECT::BOW)
 			{
 				
 				BowChange(player);
-
 				m_Map.GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
 			}
 		}
 	}
 }
 
+std::unique_ptr<Bow> CreateBow(BOW_TYPE _BowType)
+{
+	std::unique_ptr<Bow> bow;
+	switch (_BowType)
+	{
+	case BOW_TYPE::BASIC:
+		bow = std::make_unique<Bow>();
+		break;
+	case BOW_TYPE::TRIPLE:
+		bow = std::make_unique<TriBow>();
+		break;
+	default:
+		bow = std::make_unique<Bow>();
+		break;
+	}
+
+	return std::move(bow);
+}
+
 void ArrowStorm::BowChange(Player* player)
 {
-	// Random Bow 만들어야 겠지?
-	std::unique_ptr<Bow> TempBow = std::make_unique<TriBow>(player);
+	// Random Bow 생성
+	int RandomBowType = rand() % BOW_TYPE::BOW_TYPE_COUNT;
+	std::unique_ptr<Bow> TempBow = CreateBow((BOW_TYPE)RandomBowType);
+
 	std::string Msg = player->GetBow()->GetName() + " -> " + TempBow->GetName();
 	if (DrawManager::DrawConfirmPopup(Msg))
 	{
 		player->SetBow(std::move(TempBow));
+		player->GetBow()->SetOwner(player);
 	}
 	// 화면 다시 그리기
 	DrawFullBoard();
+}
+
+void ArrowStorm::LoadBow(BOW_TYPE _BowType) 
+{
+	if (Player* player = dynamic_cast<Player*>(m_CreatureArr[0].get()))
+	{
+		std::unique_ptr<Bow> LoadedBow = CreateBow(_BowType);
+		player->SetBow(std::move(LoadedBow));
+		player->GetBow()->SetOwner(player);
+	}
 }
 
 void ArrowStorm::DrawFullBoard()
@@ -320,8 +364,13 @@ BOARD_OBJECT(&ArrowStorm::MakeSnapshot())[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::
 {
 	static BOARD_OBJECT Snapshot[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH]{};
 
-	std::memcpy(Snapshot, m_Map.GetBoard(),
-		sizeof(BOARD_OBJECT)* BOARD_SIZE::BOARD_HEIGHT* BOARD_SIZE::BOARD_WIDTH);
+	for (int y = 0; y < BOARD_SIZE::BOARD_HEIGHT; ++y)
+	{
+		for (int x = 0; x < BOARD_SIZE::BOARD_WIDTH; ++x)
+		{
+			Snapshot[y][x] = m_Map.GetBoardObject(x, y);
+		}
+	}
 
 	for (int index = 0; index < ArrowStorm::GetInstance().GetCreatureArr().size(); ++index)
 	{
@@ -337,7 +386,6 @@ BOARD_OBJECT(&ArrowStorm::MakeSnapshot())[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::
 void ArrowStorm::GenerateMonster()
 {
 	int NumOfMonsters = (rand() % 5) + 5; //최소 다섯마리
-
 	for (int i = 0; i < NumOfMonsters; ++i)
 	{
 		int MonsterType = rand() % MONSTER_TYPE::COUNT;
@@ -379,24 +427,17 @@ void ArrowStorm::MapChangeCheck()
 	if (m_CreatureArr[0] == nullptr) return;
 	
 	Position Pos = m_CreatureArr[0]->GetCurrentPosition();
-	if (m_Map.GetBoard()[Pos.m_y][Pos.m_x] != BOARD_OBJECT::DOOR)return;
+	if (m_Map.GetBoardObject(Pos.m_x,Pos.m_y) != BOARD_OBJECT::DOOR)return;
 
-	for (Door& Door : m_Map.GetDoors())
-	{
-		if (Door.m_Name == "X") continue;
-		if (Door.m_Position != Pos) continue;
-
-		LoadNextMap(Door);
-		return;
-	}
+	LoadNextMap(m_Map.GetBoard()[Pos.m_y][Pos.m_x] - 100);
 }
 
-void ArrowStorm::LoadNextMap(Door _Door)
+void ArrowStorm::LoadNextMap(int _MapIndex)
 {
-	m_Map.LoadMap(_Door.m_Name);
+	m_Map.SetCurMapIndex(_MapIndex);
 	m_ProjectileList.clear();
 	m_CreatureArr.resize(1);
-	RelocatePlayer(_Door.m_Position);
+	RelocatePlayer(m_CreatureArr[0]->GetCurrentPosition());
 	GenerateMonster();
 	DrawFullBoard();
 }
