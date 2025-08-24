@@ -27,8 +27,8 @@ private:
 
 	// 멤버 변수 관리 함수들
 	void CollisionCheck();
-	void RemoveProjectile(std::list<std::unique_ptr<Projectile>>::iterator& it);
-	int DidHit(const std::unique_ptr<Projectile>& _Projectile);
+	bool DidHitWall(std::list<std::unique_ptr<Projectile>>::iterator& it);
+	int DidHitCreature(const std::unique_ptr<Projectile>& _Projectile);
 	void ApplyHit(const int& _Index, const int _Damage);
 
 	// 아이템 관련 함수들

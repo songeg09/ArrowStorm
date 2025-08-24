@@ -167,17 +167,11 @@ void ArrowStorm::CollisionCheck()
 {
 	for (std::list<std::unique_ptr<Projectile>>::iterator it = m_ProjectileList.begin(); it != m_ProjectileList.end();)
 	{
-		Position CurrentPos = (*it)->GetCurrentPosition();
-
 		// 1. 범위 밖 or 벽에 충돌
-		if (!m_Map.InRange(CurrentPos) || m_Map.GetBoard()[CurrentPos.m_y][CurrentPos.m_x] == BOARD_OBJECT::WALL)
-		{
-			RemoveProjectile(it);
-		}
-		else
+		if (!DidHitWall(it))
 		{
 			// 2. 크리쳐에 맞았을 경우
-			int HitIndex = DidHit((*it));
+			int HitIndex = DidHitCreature((*it));
 			if (HitIndex != -1)
 			{
 				// 데미지 적용
@@ -194,7 +188,7 @@ void ArrowStorm::CollisionCheck()
 
 // 화살이 크리쳐를 맞추었을 경우,
 // 해당 크리쳐의 인덱스를 반환
-int ArrowStorm::DidHit(const std::unique_ptr<Projectile>& _Projectile)
+int ArrowStorm::DidHitCreature(const std::unique_ptr<Projectile>& _Projectile)
 {
 	for (int index = 0; index < m_CreatureArr.size(); ++index)
 	{
@@ -217,11 +211,24 @@ void ArrowStorm::ApplyHit(const int& _Index, const int _Damage)
 }
 
 // 리스트에서 투사체 삭제및 덧그리기
-void ArrowStorm::RemoveProjectile(std::list<std::unique_ptr<Projectile>>::iterator& it)
+bool ArrowStorm::DidHitWall(std::list<std::unique_ptr<Projectile>>::iterator& it)
 {
 	Position CurrentPos = (*it)->GetCurrentPosition();
-	DrawManager::DrawObjectAtPosition(CurrentPos, m_Map.GetBoardObject(CurrentPos.m_x, CurrentPos.m_y));
-	it = m_ProjectileList.erase(it);
+
+	if (!m_Map.InRange(CurrentPos))
+	{
+		it = m_ProjectileList.erase(it);
+		return true;
+	}
+	else if (m_Map.GetBoardObject(CurrentPos.m_x, CurrentPos.m_y) == BOARD_OBJECT::WALL 
+		|| m_Map.GetBoardObject(CurrentPos.m_x, CurrentPos.m_y) == BOARD_OBJECT::DOOR)
+	{
+		DrawManager::DrawObjectAtPosition(CurrentPos, m_Map.GetBoardObject(CurrentPos.m_x, CurrentPos.m_y));
+		it = m_ProjectileList.erase(it);
+		return true;
+	}
+
+	return false;
 }
 
 void ArrowStorm::CommitTick()
