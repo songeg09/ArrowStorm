@@ -7,11 +7,10 @@
 #include "Actor.h"
 #include "Slime.h"
 #include "Skeleton.h"
+
 #include "Bow.h"
 #include "TriBow.h"
-
-
-
+#include "FastBow.h"
 
 ArrowStorm& ArrowStorm::GetInstance()
 {
@@ -29,30 +28,27 @@ ArrowStorm::~ArrowStorm()
 
 }
 
-void ArrowStorm::Init()
+void ArrowStorm::InitGame()
 {
 	// 초기화
 	m_EndGame = false;
 	m_CreatureArr.clear();
 	m_ProjectileList.clear();
-
 	m_CreatureArr.push_back(std::make_unique<Player>(Position(BOARD_SIZE::BOARD_WIDTH / 2, BOARD_SIZE::BOARD_HEIGHT / 2), BOARD_OBJECT::PLAYER_UP));
 }
 
 void ArrowStorm::NewGame()
 {
-	Init();
+	InitGame();
 	m_Map.SetCurMapIndex(0);
 	m_Map.LoadMapsForNewGame();
 }
 
 bool ArrowStorm::LoadGame()
 {
-	Init();
-	
+	InitGame();
 	if(!m_Map.LoadMapsToContinue() || !LoadPlayerInfo())
 		return false;
-
 	return true;
 }
 
@@ -69,7 +65,7 @@ bool ArrowStorm::LoadPlayerInfo()
 		load >> tmp1 >> tmp2;
 		player->SetCurrentPosition(Position(tmp1, tmp2));
 
-		// 활 로드 *****
+		// 활 로드
 		load >> tmp1;
 		LoadBow((BOW_TYPE)tmp1);
 
@@ -112,7 +108,7 @@ void ArrowStorm::SavePlayerInfo()
 	{
 		// 위치 저장
 		save << player->GetCurrentPosition().m_x << " " << player->GetCurrentPosition().m_y << std::endl;;
-		// 활 이름 저장
+		// 활 타입 저장
 		save << player->GetBow()->GetType() << std::endl;
 		// Hp 및 Mp 저장
 		save << player->GetHp() << " " << player->GetMp() << std::endl;
@@ -122,7 +118,7 @@ void ArrowStorm::SavePlayerInfo()
 	save.close();
 }
 
-void ArrowStorm::Initialize()
+void ArrowStorm::InitBoard()
 {
 	GenerateMonster();
 	DrawFullBoard();
@@ -131,19 +127,16 @@ void ArrowStorm::Initialize()
 
 void ArrowStorm::Run()
 {
-	Initialize();
+	InitBoard();
 	
 	while (1)
 	{
 		Tick();
 		CollisionCheck();
 		CommitTick();
-		ItemCheck();
-		MapChangeCheck();
 
 		if (IsGameOver())
 		{
-			
 			return;
 		}
 	}
@@ -268,26 +261,22 @@ bool ArrowStorm::CreatureExistAtPos(const Position& _Pos)
 	return false;
 }
 
-void ArrowStorm::ItemCheck()
+void ArrowStorm::ItemCheck(Player* player)
 {
-	if (m_CreatureArr[0] != nullptr)
+	if (player == nullptr) return;
+	
+	Position Pos = player->GetCurrentPosition();
+	if (m_Map.GetBoardObject(Pos.m_x, Pos.m_y) == BOARD_OBJECT::CHEST)
 	{
-		if (Player* player = dynamic_cast<Player*>(m_CreatureArr[0].get()))
-		{
-			Position Pos = player->GetCurrentPosition();
-			if (m_Map.GetBoardObject(Pos.m_x, Pos.m_y) == BOARD_OBJECT::CHEST)
-			{
-				int Type = rand() % 2;
-				player->EarnPotion((POTION_TYPE)Type);
-				m_Map.GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
-			}
-			else if (m_Map.GetBoardObject(Pos.m_x, Pos.m_y) == BOARD_OBJECT::BOW)
-			{
+		int Type = rand() % 2;
+		player->EarnPotion((POTION_TYPE)Type);
+		m_Map.GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
+	}
+	else if (m_Map.GetBoardObject(Pos.m_x, Pos.m_y) == BOARD_OBJECT::BOW)
+	{
 				
-				BowChange(player);
-				m_Map.GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
-			}
-		}
+		BowChange(player);
+		m_Map.GetBoard()[Pos.m_y][Pos.m_x] = BOARD_OBJECT::EMPTY;
 	}
 }
 
@@ -301,6 +290,9 @@ std::unique_ptr<Bow> CreateBow(BOW_TYPE _BowType)
 		break;
 	case BOW_TYPE::TRIPLE:
 		bow = std::make_unique<TriBow>();
+		break;
+	case BOW_TYPE::FAST:
+		bow = std::make_unique<FastBow>();
 		break;
 	default:
 		bow = std::make_unique<Bow>();
@@ -422,14 +414,12 @@ Position ArrowStorm::GetRandomePos()
 
 }
 
-void ArrowStorm::MapChangeCheck()
+void ArrowStorm::MapChangeCheck(Position _Pos)
 {
 	if (m_CreatureArr[0] == nullptr) return;
-	
-	Position Pos = m_CreatureArr[0]->GetCurrentPosition();
-	if (m_Map.GetBoardObject(Pos.m_x,Pos.m_y) != BOARD_OBJECT::DOOR)return;
+	if (m_Map.GetBoardObject(_Pos.m_x, _Pos.m_y) != BOARD_OBJECT::DOOR)return;
 
-	LoadNextMap(m_Map.GetBoard()[Pos.m_y][Pos.m_x] - 100);
+	LoadNextMap(m_Map.GetBoard()[_Pos.m_y][_Pos.m_x] - 100);
 }
 
 void ArrowStorm::LoadNextMap(int _MapIndex)

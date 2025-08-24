@@ -15,6 +15,11 @@ Map::Map()
 	
 }
 
+Map::~Map()
+{
+
+}
+
 void Map::LoadMapsForNewGame()
 {
 	std::fstream load("Maps/MapList.txt");
@@ -31,7 +36,10 @@ void Map::LoadMapsForNewGame()
 		{
 			load >> tmp;
 			filename = "Maps/" + std::to_string(tmp) + ".txt";
-			LoadMap(i, filename);
+			
+			std::fstream map(filename);
+			LoadSingleMap(i, map);
+			map.close();
 		}
 		load.close();
 	}	
@@ -52,38 +60,21 @@ bool Map::LoadMapsToContinue()
 		load >> tmp;
 		m_TotalMapNum = tmp;
 
-
-		std::string tmpChar;
 		m_Maps.resize(m_TotalMapNum, std::vector<std::vector<int>>(BOARD_SIZE::BOARD_HEIGHT, std::vector<int>(BOARD_SIZE::BOARD_WIDTH)));
 		for (int index = 0; index < m_TotalMapNum; ++index)
 		{
-			for (int y = 0; y < BOARD_SIZE::BOARD_HEIGHT; ++y)
-			{
-				load >> tmpChar;
-				for (int x = 0; x < BOARD_SIZE::BOARD_WIDTH; ++x)
-				{
-					m_Maps[index][y][x] = tmpChar[x] - '0';
-				}
-			}
-
-			int NextMapIndex;
-			for (int DoorIndex = 0; DoorIndex < 4; ++DoorIndex)
-			{
-				load >> NextMapIndex;
-				if (NextMapIndex == -1) continue;
-				m_Maps[index][Doors[DoorIndex].m_y][Doors[DoorIndex].m_x] = NextMapIndex;
-			}
+			LoadSingleMap(index, load);
 		}
 
+		load.close();
 		return true;
 	}
 
 	return false;
 }
 
-void Map::LoadMap(int index, std::string filename)
+void Map::LoadSingleMap(int index, std::fstream& load)
 {
-	std::fstream load(filename);
 	if (load.is_open())
 	{
 		std::string tmp;
@@ -95,7 +86,7 @@ void Map::LoadMap(int index, std::string filename)
 				m_Maps[index][y][x] = tmp[x] - '0';
 			}
 		}
-		
+
 		int NextMapIndex;
 		for (int i = 0; i < 4; ++i)
 		{
@@ -103,8 +94,6 @@ void Map::LoadMap(int index, std::string filename)
 			if (NextMapIndex == -1) continue;
 			m_Maps[index][Doors[i].m_y][Doors[i].m_x] = NextMapIndex;
 		}
-
-		load.close();
 	}
 }
 
@@ -119,6 +108,7 @@ void Map::SaveMapInfo()
 
 	for (int i = 0; i < m_TotalMapNum; ++i)
 	{
+		// 지도 저장
 		for (int y = 0; y < BOARD_SIZE::BOARD_HEIGHT; ++y)
 		{
 			for (int x = 0; x < BOARD_SIZE::BOARD_WIDTH; ++x)
@@ -131,6 +121,7 @@ void Map::SaveMapInfo()
 			save << std::endl;
 		}
 
+		// 문 저장
 		for (int DoorIndex = 0; DoorIndex < 4; ++DoorIndex)
 		{
 			if (m_Maps[i][Doors[DoorIndex].m_y][Doors[DoorIndex].m_x] < 100)
@@ -139,11 +130,6 @@ void Map::SaveMapInfo()
 				save << m_Maps[i][Doors[DoorIndex].m_y][Doors[DoorIndex].m_x] << std::endl;
 		}
 	}
-}
-
-Map::~Map()
-{
-
 }
 
 bool Map::IsValidPos(const Position& Pos)
@@ -164,7 +150,6 @@ bool Map::InRange(const Position& _Position)
 		&& 0 <= _Position.m_y && _Position.m_y < BOARD_SIZE::BOARD_HEIGHT);
 }
 
-
 void Map::DrawBoard()
 {
 	std::string Line;
@@ -179,7 +164,6 @@ void Map::DrawBoard()
 		std::cout << Line;
 	}
 }
-
 
 BOARD_OBJECT Map::IntToBO(int _Input)
 {

@@ -56,6 +56,9 @@
     <ClCompile Include="TriBow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FastBow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameManager.h">
@@ -107,6 +110,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TriBow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FastBow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

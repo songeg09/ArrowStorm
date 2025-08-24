@@ -34,6 +34,15 @@ void Player::Tick()
 	HandleInput();
 }
 
+void Player::TryMove()
+{
+	if (m_MoveTimer->CheckTimer())
+	{
+		ArrowStorm::GetInstance().ItemCheck(this);
+		ArrowStorm::GetInstance().MapChangeCheck(m_CurrentPosition);
+	}
+}
+
 void Player::SetFacingDir(DIRECTION _NewFacingDir)
 {
 	m_FacingDir = _NewFacingDir;

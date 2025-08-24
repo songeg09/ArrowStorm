@@ -4,16 +4,10 @@
 #include "Creature.h"
 #include "Projectile.h"
 
-TriBow::TriBow()
-	: Bow()
+TriBow::TriBow(Creature* _Owner)
+	: Bow(_Owner)
 {
-	m_Name = "Triple_Bow";
-}
 
-TriBow::TriBow(class Creature* _Owner)
-	:Bow(_Owner)
-{
-	m_Name = "Triple_Bow";
 }
 
 TriBow::~TriBow()

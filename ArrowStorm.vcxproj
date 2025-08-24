@@ -131,6 +131,7 @@
     <ClCompile Include="ArrowStorm.cpp" />
     <ClCompile Include="Bow.cpp" />
     <ClCompile Include="Creature.cpp" />
+    <ClCompile Include="FastBow.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Map.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="Bow.h" />
     <ClInclude Include="Creature.h" />
     <ClInclude Include="DrawManager.h" />
+    <ClInclude Include="FastBow.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Mecro.h" />

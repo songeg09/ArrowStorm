@@ -13,7 +13,7 @@ private:
 	std::string m_Name;
 	std::vector<std::vector<std::vector<int>>> m_Maps;
 
-	void LoadMap(int index, std::string filename);
+	void LoadSingleMap(int index, std::fstream& load);
 
 	// 유틸리티 함수
 	BOARD_OBJECT IntToBO(int _Input);

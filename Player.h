@@ -14,6 +14,7 @@ private:
 	int m_MpPotion;
 
 	// 플레이어 조작 함수
+	virtual void TryMove() override;
 	void HandleInput();
 	void ClearInputBuffer();
 	void SetFacingDir(DIRECTION _NewFacingDir);

@@ -32,18 +32,17 @@ private:
 	void ApplyHit(const int& _Index, const int _Damage);
 
 	// 아이템 관련 함수들
-	void ItemCheck();
 	void BowChange(class Player* player);
 	void LoadBow(BOW_TYPE _BowType);
 
 	// 맵 관련 함수들
 	void LoadNextMap(int _MapIndex);
-	void MapChangeCheck();
 	void RelocatePlayer(Position _Pos);
 
 	// 게임 시작, 로드 ,종료 관리 함수
+	void InitGame();
+	void InitBoard();
 	bool IsGameOver();
-	void Init();
 	bool LoadPlayerInfo();
 	void SavePlayerInfo();
 
@@ -60,9 +59,12 @@ public:
 	// 게임 시작, 로드 ,종료 관리 함수
 	void NewGame();
 	bool LoadGame();
-	void Initialize();
 	void Run();
 	void SaveGame();
+
+	// 플레이어 이동시 확인이 필요한것들
+	void ItemCheck(Player* player);
+	void MapChangeCheck(Position _Pos);
 
 	// Getter
 	std::list<std::unique_ptr<Projectile>>& GetProjectileList()
@@ -80,7 +82,6 @@ public:
 	// 유틸리티 함수
 	bool CreatureExistAtPos(const Position& _Pos);
 	BOARD_OBJECT(&MakeSnapshot())[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH];
-
 
 };
 

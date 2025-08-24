@@ -8,9 +8,9 @@ protected:
 	virtual void UseSkill(const DIRECTION _AmingDir) override;
 
 public:
-	TriBow();
-	TriBow(class Creature* _Owner);
+	TriBow(class Creature* _Owner = nullptr);
 	virtual ~TriBow();
+	virtual std::string GetName() const override { return "Triple Bow"; }
 	virtual BOW_TYPE GetType() const override{ return BOW_TYPE::TRIPLE; }
 };
 
