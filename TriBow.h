@@ -8,8 +8,11 @@ protected:
 	virtual void UseSkill(const DIRECTION _AmingDir) override;
 
 public:
+	// 持失切 社瑚切
 	TriBow(class Creature* _Owner = nullptr);
 	virtual ~TriBow();
+	
+	// Getter & Setter
 	virtual std::string GetName() const override { return "Triple Bow"; }
 	virtual BOW_TYPE GetType() const override{ return BOW_TYPE::TRIPLE; }
 };

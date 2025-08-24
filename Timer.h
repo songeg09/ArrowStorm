@@ -6,11 +6,13 @@
 class Timer
 {
 protected:
+	// 멤버 변수
 	int m_iOldTime; // 이전시간
 	int m_iSecond; // 기준시간
 	std::function<void()> m_callbackFunc;
 
 public:
+	// 생성자 소멸자
 	Timer() {}
 	~Timer() {}
 
@@ -22,6 +24,7 @@ public:
 		m_callbackFunc = _callbackFunc;
 	}
 
+	// 타이머 확인
 	bool CheckTimer() // 타이머 기능
 	{
 		if (clock() - m_iOldTime >= m_iSecond)
@@ -34,6 +37,7 @@ public:
 		return false;
 	}
 
+	// Getter & Setter
 	void ChangeSecond(int iSecond)
 	{
 		m_iSecond = iSecond;

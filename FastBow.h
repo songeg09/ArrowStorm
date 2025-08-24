@@ -4,8 +4,11 @@
 class FastBow : public Bow
 {
 public:
+	// 持失切 社瑚切
 	FastBow(class Creature* _Owner = nullptr);
 	virtual ~FastBow();
+	
+	// Getter & Setter
 	virtual std::string GetName() const override { return "Fast Bow"; }
 	virtual BOW_TYPE GetType() const override { return BOW_TYPE::FAST; }
 }; 
