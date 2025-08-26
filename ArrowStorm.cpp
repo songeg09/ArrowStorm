@@ -87,6 +87,16 @@ bool ArrowStorm::LoadPlayerInfo()
 		// 경험치 로드
 		load >> tmp1;
 		player->SetExp(tmp1);
+
+		// 최대 체력및 마나 로드
+		load >> tmp1 >> tmp2;
+		player->SetCurrentMaxHp(tmp1);
+		player->SetCurrentMaxMp(tmp2);
+
+		// 공격력 및 공격속도 로드
+		load >> tmp1 >> tmp2;
+		player->SetRangedDamage(tmp1);
+		player->SetAttackSpeed(tmp2);
 	}
 
 	load.close();
@@ -94,18 +104,22 @@ bool ArrowStorm::LoadPlayerInfo()
 	return true;
 }
 
-void ArrowStorm::SaveGame()
+void ArrowStorm::EndGame()
 {
-	SavePlayerInfo();
-	m_Map.SaveMapInfo();
-	
-	std::string Msg = "저장 성공! 게임을 종료하시겠습니까?";
+	std::string Msg = "저장 하시겠습니까?";
+	if (DrawManager::DrawConfirmPopup(Msg))
+	{
+		SavePlayerInfo();
+		m_Map.SaveMapInfo();
+	}
+
+	Msg = "저장 성공! 게임을 종료하시겠습니까?";
 	if (DrawManager::DrawConfirmPopup(Msg))
 	{
 		m_EndGame = true;
 		return;
 	}
-		
+
 	DrawFullBoard();
 }
 
@@ -127,6 +141,10 @@ void ArrowStorm::SavePlayerInfo()
 		save << player->GetLevel() << std::endl;
 		// 경험치 저장
 		save << player->GetExp() << std::endl;
+		// 최대 체력 및 마나 저장
+		save << player->GetCurrentMaxHp() << " " << player->GetCurrentMaxMp() << std::endl;
+		// 공격력 및 공격속도 저장
+		save << player->GetRangedDamage() << " " << player->GetAttackSpeed() << std::endl;
 	}
 	save.close();
 }
@@ -346,6 +364,7 @@ void ArrowStorm::BowChange(Player* player)
 	{
 		player->SetBow(std::move(TempBow));
 		player->GetBow()->SetOwner(player);
+		player->GetBow()->SetAttackTimerCool(player->GetAttackSpeed());
 	}
 	// 화면 다시 그리기
 	DrawFullBoard();

@@ -4,16 +4,22 @@
 #include "Bow.h"
 #include "UIManager.h"
 #include "ArrowStorm.h"
+#include "DrawManager.h"
 
 Player::Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 	: Creature(_InitialPosition, _ActorObject)
 {
-	m_Hp = PLAYER_MAX_HP;
-	m_Mp = PLAYER_MAX_MP;
 	m_HpPotion = 0;
 	m_MpPotion = 0;
 	m_Level = 1;
 	m_Exp = 0;
+	m_CurrentMaxHp = 3;
+	m_CurrentMaxMp = 3;
+	m_Hp = m_CurrentMaxHp;
+	m_Mp = m_CurrentMaxMp;
+
+	m_RangedDamage = 0;
+	m_AttackSpeed = DEFAULT_ATTACK_COOL;
 
 	m_FacingDir = DIRECTION::UP;
 	m_MoveTimer->SetTimer(TIME::PLAYER_MOVE_SPEED, std::bind(&Player::MoveTowards, this, std::ref(m_MovingDir)));
@@ -125,7 +131,7 @@ void Player::HandleInput()
 			TryUsePotion(POTION_TYPE::MP);
 			break;
 		case KEY_BOARD::ESCAPE:
-			ArrowStorm::GetInstance().SaveGame();
+			ArrowStorm::GetInstance().EndGame();
 			break;
 		default:
 			break;
@@ -168,8 +174,8 @@ void Player::TryUsePotion(POTION_TYPE _PotionType)
 		{
 			m_HpPotion--;
 			m_Hp += 3;
-			if (m_Hp > PLAYER_MAX_HP)
-				m_Hp = PLAYER_MAX_HP;
+			if (m_Hp > m_CurrentMaxHp)
+				m_Hp = m_CurrentMaxHp;
 			UIManager::UpdateHpBar();
 			UIManager::UpdateHpPotions();
 		}
@@ -180,8 +186,8 @@ void Player::TryUsePotion(POTION_TYPE _PotionType)
 		{
 			m_MpPotion--;
 			m_Mp += 3;
-			if (m_Mp > PLAYER_MAX_MP)
-				m_Mp = PLAYER_MAX_MP;
+			if (m_Mp > m_CurrentMaxMp)
+				m_Mp = m_CurrentMaxMp;
 			UIManager::UpdateMpBar();
 			UIManager::UpdateMpPotions();
 		}
@@ -207,11 +213,69 @@ void Player::EarnExp(int _Exp)
 	int ExpRequired = m_Level * 5;
 	while (ExpRequired <= m_Exp)
 	{
-		m_Level++;
+		LevelUp();
 		m_Exp -= ExpRequired;
 		ExpRequired = m_Level * 5;
-		UIManager::UpdateLevel();
 	}
 
 	UIManager::UpdateExp();
+}
+
+void Player::LevelUp()
+{
+	m_Level++;
+	UIManager::UpdateLevel();
+
+	// 데미지 증가
+	SetRangedDamage(m_RangedDamage+1);
+	UIManager::UpdateDamage();
+
+	// Hp 또는 Mp 최대치 증가 선택
+	IncreaseHpMp();
+
+	// 체력및 마나 풀로 채워주기
+	m_Hp = m_CurrentMaxHp;
+	m_Mp = m_CurrentMaxMp;
+	UIManager::UpdateHpBar();
+	UIManager::UpdateMpBar();
+
+	// 5레벨 마다 공속 감소
+	if (m_Level % 1 == 0)
+	{
+		// 임의로 두배 빠르게 만들어주기
+		SetAttackSpeed(m_AttackSpeed *= 0.5);
+		UIManager::UpdateAttackSpeed();
+	}
+}
+
+void Player::IncreaseHpMp()
+{
+	std::string Msg = "Level Up! Hp증가: 1, Mp증가: else";
+	if (DrawManager::DrawConfirmPopup(Msg))
+	{
+		m_CurrentMaxHp++;
+		if (m_CurrentMaxHp > PLAYER_MAX_HP)
+			m_CurrentMaxHp = PLAYER_MAX_HP;
+	}
+	else
+	{
+		m_CurrentMaxMp++;
+		if (m_CurrentMaxMp > PLAYER_MAX_MP)
+			m_CurrentMaxMp = PLAYER_MAX_MP;
+	}
+	ArrowStorm::GetInstance().DrawFullBoard();
+}
+
+void Player::SetRangedDamage(int _RangedDamage)
+{
+	m_RangedDamage = _RangedDamage; 
+	m_Bow->SetDamage(_RangedDamage);
+}
+
+void Player::SetAttackSpeed(int _AttackSpeed)
+{ 
+	m_AttackSpeed = _AttackSpeed;
+	if (m_AttackSpeed < TIME::MINIMUM_ATTACK_COOL) m_AttackSpeed = TIME::MINIMUM_ATTACK_COOL;
+	m_AttackSpeed = _AttackSpeed; 
+	m_Bow->SetAttackTimerCool(m_AttackSpeed);
 }

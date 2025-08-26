@@ -26,9 +26,11 @@ public:
 	void TrySkill(const DIRECTION _AmingDir);
 
 	// Getters & Setter
+	void SetDamage(int _RangedDamage) { m_Damage = _RangedDamage + DEFAULT_DAMAGE; }
 	virtual std::string GetName() const { return "Basic Bow"; }
 	virtual BOW_TYPE GetType() const { return m_BowType; }
-	void SetOwner(Creature* _Owner) { m_Owner = _Owner; }
+	void SetOwner(Creature* _Owner);
 	int GetSkillCoolTime();
+	void SetAttackTimerCool(int _AttackSpeed);
 };
 

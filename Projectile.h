@@ -12,7 +12,7 @@ private:
 
 public:
 	// 持失切 社瑚切
-	Projectile(Creature* m_Owner, const Position _InitialPosition, const BOARD_OBJECT _ActorObject, const DIRECTION _MovingDirection, int _Damage = DEFAULT_DAMAGE);
+	Projectile(Creature* m_Owner, const Position _InitialPosition, const BOARD_OBJECT _ActorObject, const DIRECTION _MovingDirection, int _Damage);
 	virtual ~Projectile();
 
 	// Getter & Setter

@@ -22,6 +22,12 @@ Bow::~Bow()
 	
 }
 
+void Bow::SetOwner(Creature* _Owner)
+{
+	m_Owner = _Owner;
+	m_Damage = m_Owner->GetRangedDamage() + DEFAULT_DAMAGE;
+}
+
 void Bow::TryFire(const DIRECTION _AmingDir)
 {
 	m_AmingDir = _AmingDir;
@@ -32,7 +38,7 @@ void Bow::Fire(const DIRECTION _AmingDir)
 {
 	Position InitialPos = m_Owner->GetCurrentPosition() + Directions[_AmingDir];
 	BOARD_OBJECT Object = GetArrowObject(_AmingDir);
-	ArrowStorm::GetInstance().GetProjectileList().emplace_back(std::make_unique<Projectile>(m_Owner,InitialPos, Object, _AmingDir));
+	ArrowStorm::GetInstance().GetProjectileList().emplace_back(std::make_unique<Projectile>(m_Owner,InitialPos, Object, _AmingDir, m_Damage));
 }
 
 void Bow::TrySkill(const DIRECTION _AmingDir)
@@ -61,4 +67,9 @@ int Bow::GetSkillCoolTime()
 
 	int TimeLeft = (CoolTime - (CurrentTime - LastUsedTime)) / 100;
 	return TimeLeft;
+}
+
+void Bow::SetAttackTimerCool(int _AttackSpeed)
+{
+	m_AttackTimer->ChangeSecond(_AttackSpeed);
 }

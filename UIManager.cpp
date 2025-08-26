@@ -15,7 +15,7 @@ namespace UIManager {
 	constexpr int UI_OFFSET_Y = BOARD_SIZE::BOARD_HEIGHT;
 
 	Position BOW_NAME_Text(UI_OFFSET_X, UI_OFFSET_Y);
-	Position BOW_NAME(UI_OFFSET_X + 3, UI_OFFSET_Y);
+	Position BOW_NAME(UI_OFFSET_X + 5, UI_OFFSET_Y);
 
 	Position HP_BAR(UI_OFFSET_X, UI_OFFSET_Y+1);
 	Position MP_BAR(UI_OFFSET_X, UI_OFFSET_Y+2);
@@ -25,13 +25,19 @@ namespace UIManager {
 	Position HP_POTION_NUM(UI_OFFSET_X + 26, UI_OFFSET_Y + 1);
 	Position MP_POTION_NUM(UI_OFFSET_X + 26, UI_OFFSET_Y + 2);
 
-	Position Level_Text(UI_OFFSET_X + 25, UI_OFFSET_Y);
-	Position Level_Num(UI_OFFSET_X + 28, UI_OFFSET_Y);
-	Position Exp_Text(UI_OFFSET_X + 32, UI_OFFSET_Y);
-	Position Exp_Num(UI_OFFSET_X + 35, UI_OFFSET_Y);
+	Position Level_Text(UI_OFFSET_X + 32, UI_OFFSET_Y);
+	Position Level_Num(UI_OFFSET_X + 35, UI_OFFSET_Y);
+	Position Exp_Text(UI_OFFSET_X + 32, UI_OFFSET_Y+1);
+	Position Exp_Num(UI_OFFSET_X + 34, UI_OFFSET_Y+1);
 
 	Position Skill_CoolTime_Text(UI_OFFSET_X + 12, UI_OFFSET_Y);
 	Position Skill_CollTime(UI_OFFSET_X + 20, UI_OFFSET_Y);
+
+	Position Attack_Speed_Text(UI_OFFSET_X + 38, UI_OFFSET_Y);
+	Position Attack_Speed_Num(UI_OFFSET_X + 45, UI_OFFSET_Y);
+
+	Position Damage_Text(UI_OFFSET_X + 38, UI_OFFSET_Y+1);
+	Position Damage_Num(UI_OFFSET_X + 42, UI_OFFSET_Y+1);
 
 	std::string GetUIIcon(UI_ICON _Icon)
 	{
@@ -137,12 +143,17 @@ namespace UIManager {
 			DrawManager::DrawAtPos(Level_Text, "Level: ");
 			DrawManager::DrawAtPos(Exp_Text, "Exp: ");
 			DrawManager::DrawAtPos(Skill_CoolTime_Text, "Skill Cool Time:");
+			DrawManager::DrawAtPos(Attack_Speed_Text, "Attack Speed:");
+			DrawManager::DrawAtPos(Damage_Text, "Damage:");
 
 		UpdateBowName();
 		UpdateHpBar();
 		UpdateMpBar();
 		UpdateLevel();
 		UpdateExp();
+		UpdateDamage();
+		UpdateAttackSpeed();
+
 		UpdateHpPotions();
 		UpdateMpPotions();
 	}
@@ -176,7 +187,27 @@ namespace UIManager {
 		{
 			std::string Msg = std::to_string(player->GetExp()) + "/" + std::to_string(player->GetLevel() * 5);
 			ORIGINAL
+				DrawManager::DrawAtPos(Exp_Num, "        ");
 				DrawManager::DrawAtPos(Exp_Num, Msg);
+		}
+	}
+
+	void UpdateAttackSpeed()
+	{
+		if(Player * player = GetPlayerPtr())
+		{
+			std::string Msg = std::to_string((float)TIME::DEFAULT_ATTACK_COOL/(float)player->GetAttackSpeed()).substr(0, 3) + "x";
+			ORIGINAL
+				DrawManager::DrawAtPos(Attack_Speed_Num, Msg);
+		}
+	}
+
+	void UpdateDamage()
+	{
+		if (Player* player = GetPlayerPtr())
+		{
+			ORIGINAL
+				DrawManager::DrawAtPos(Damage_Num, std::to_string(player->GetRangedDamage()));
 		}
 	}
 };

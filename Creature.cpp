@@ -5,6 +5,7 @@
 Creature::Creature(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 	: Actor(_InitialPosition, _ActorObject)
 {
+	m_RangedDamage = 0;
 }
 
 Creature::~Creature()

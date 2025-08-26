@@ -47,7 +47,6 @@ private:
 	void SavePlayerInfo();
 
 	// 유틸리티 함수
-	void DrawFullBoard();
 	void GenerateMonster();
 	Position GetRandomePos();
 
@@ -60,7 +59,7 @@ public:
 	void NewGame();
 	bool LoadGame();
 	void Run();
-	void SaveGame();
+	void EndGame();
 
 	// 플레이어 이동시 확인이 필요한것들
 	void ItemCheck(Player* player);
@@ -80,6 +79,7 @@ public:
 	Map& GetMap() { return m_Map; }
 
 	// 유틸리티 함수
+	void DrawFullBoard();
 	bool CreatureExistAtPos(const Position& _Pos);
 	BOARD_OBJECT(&MakeSnapshot())[BOARD_SIZE::BOARD_HEIGHT][BOARD_SIZE::BOARD_WIDTH];
 

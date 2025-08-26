@@ -15,6 +15,11 @@ private:
 	int m_Level;
 	int m_Exp;
 
+	int m_CurrentMaxHp;
+	int m_CurrentMaxMp;
+
+	int m_AttackSpeed;
+
 	// 플레이어 조작 함수
 	virtual void TryMove() override;
 	void HandleInput();
@@ -25,6 +30,10 @@ private:
 	void UpdatePotion(int& _Potion, int _MaxVal, std::function<void()> _UpdateUI);
 	void TryUsePotion(POTION_TYPE _PotionType);
 	void UsePotion(int& _Potion, int& Stat, std::function<void()> _UpdateUI);
+
+	// 레벨업 관련 함수들
+	void LevelUp();
+	void IncreaseHpMp();
 
 public:
 	// 생성자 소멸자
@@ -48,6 +57,15 @@ public:
 	void SetLevel(int _Level) { m_Level = _Level; }
 	int GetExp() { return m_Exp; }
 	void SetExp(int _Exp) { m_Exp = _Exp; }
+	int GetCurrentMaxHp() { return m_CurrentMaxHp; }
+	int GetCurrentMaxMp() { return m_CurrentMaxMp; }
+	void SetCurrentMaxHp(int _CurrentMaxHp) { m_CurrentMaxHp = _CurrentMaxHp; }
+	void SetCurrentMaxMp(int _CurrentMaxMp) { m_CurrentMaxMp = _CurrentMaxMp; }
+
+	void SetRangedDamage(int _RangedDamage);
+	int GetAttackSpeed() { return m_AttackSpeed; }
+	void SetAttackSpeed(int _AttackSpeed);
+	
 
 	// 레벨 관련 함수들
 	void EarnExp(int _Exp);

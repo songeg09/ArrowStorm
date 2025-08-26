@@ -19,6 +19,8 @@ namespace UIManager
 	void UpdateMpPotions();
 	void UpdateLevel();
 	void UpdateExp();
+	void UpdateAttackSpeed();
+	void UpdateDamage();
 
 	void DrawUI();
 
