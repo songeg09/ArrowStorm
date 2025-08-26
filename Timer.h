@@ -43,6 +43,7 @@ public:
 		m_iSecond = iSecond;
 	}
 	int GetSecond() { return m_iSecond; }
+	int GetOldTime() { return m_iOldTime; }
 
 };
 

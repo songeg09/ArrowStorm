@@ -8,6 +8,7 @@ Slime::Slime(const Position _InitialPos)
 	m_MoveTimer->SetTimer(TIME::SLIME_MOVE_SPEED, std::bind(&Slime::FollowTarget, this));
 	m_AttackTimer->SetTimer(TIME::SLIME_ATTACK_COOL, std::bind(&Slime::MeleeAttack, this));
 	m_MeleeDamage = DEFAULT_DAMAGE;
+	m_Exp = MONSTER_EXP::SLIME_EXP;
 }
 
 Slime::~Slime()

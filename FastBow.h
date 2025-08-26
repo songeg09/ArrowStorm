@@ -10,6 +10,5 @@ public:
 	
 	// Getter & Setter
 	virtual std::string GetName() const override { return "Fast Bow"; }
-	virtual BOW_TYPE GetType() const override { return BOW_TYPE::FAST; }
 }; 
 

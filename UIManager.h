@@ -17,9 +17,10 @@ namespace UIManager
 	std::string Format02(int _Num);
 	void UpdateHpPotions();
 	void UpdateMpPotions();
+	void UpdateLevel();
+	void UpdateExp();
 
-	void DrawPotionIcons();
 	void DrawUI();
 
-
+	void UpdateSkillCoolTime();
 };

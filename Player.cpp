@@ -12,10 +12,13 @@ Player::Player(const Position _InitialPosition, const BOARD_OBJECT _ActorObject)
 	m_Mp = PLAYER_MAX_MP;
 	m_HpPotion = 0;
 	m_MpPotion = 0;
+	m_Level = 1;
+	m_Exp = 0;
 
 	m_FacingDir = DIRECTION::UP;
 	m_MoveTimer->SetTimer(TIME::PLAYER_MOVE_SPEED, std::bind(&Player::MoveTowards, this, std::ref(m_MovingDir)));
-	m_Bow = std::make_unique<Bow>(this); // 임시
+	m_Bow = std::make_unique<Bow>(); // 임시
+	m_Bow->SetOwner(this);
 }
 
 Player::~Player()
@@ -32,6 +35,7 @@ void Player::TakeDamage(const int _Damage)
 void Player::Tick()
 {
 	HandleInput();
+	UIManager::UpdateSkillCoolTime();
 }
 
 void Player::TryMove()
@@ -194,4 +198,20 @@ void Player::UseMp()
 {
 	m_Mp--; 
 	UIManager::UpdateMpBar();
+}
+
+void Player::EarnExp(int _Exp)
+{
+	m_Exp += _Exp;
+
+	int ExpRequired = m_Level * 5;
+	while (ExpRequired <= m_Exp)
+	{
+		m_Level++;
+		m_Exp -= ExpRequired;
+		ExpRequired = m_Level * 5;
+		UIManager::UpdateLevel();
+	}
+
+	UIManager::UpdateExp();
 }

@@ -10,6 +10,7 @@ protected:
 	DIRECTION m_AmingDir;
 	std::unique_ptr<class Timer> m_AttackTimer;
 	std::unique_ptr<class Timer> m_SkillTimer;
+	const BOW_TYPE m_BowType;
 
 	// 공격 함수
 	void Fire(const DIRECTION _AmingDir);
@@ -17,7 +18,7 @@ protected:
 
 public:
 	// 생성자 소멸자
-	Bow(class Creature* _Owner = nullptr);
+	Bow(BOW_TYPE _BowType = BOW_TYPE::BASIC, Creature* _Owner = nullptr);
 	virtual ~Bow();
 	
 	// 발사 관련 함수
@@ -26,7 +27,8 @@ public:
 
 	// Getters & Setter
 	virtual std::string GetName() const { return "Basic Bow"; }
-	virtual BOW_TYPE GetType() const { return BOW_TYPE::BASIC; }
+	virtual BOW_TYPE GetType() const { return m_BowType; }
 	void SetOwner(Creature* _Owner) { m_Owner = _Owner; }
+	int GetSkillCoolTime();
 };
 

@@ -12,6 +12,8 @@ private:
 	int m_Mp;
 	int m_HpPotion;
 	int m_MpPotion;
+	int m_Level;
+	int m_Exp;
 
 	// 플레이어 조작 함수
 	virtual void TryMove() override;
@@ -42,6 +44,13 @@ public:
 	int GetMpPotion() { return m_MpPotion; }
 	void SetMpPotion(int _MpPotion) { m_MpPotion = _MpPotion; }
 	void EarnPotion(POTION_TYPE _PotionType);
+	int GetLevel(){ return m_Level; }
+	void SetLevel(int _Level) { m_Level = _Level; }
+	int GetExp() { return m_Exp; }
+	void SetExp(int _Exp) { m_Exp = _Exp; }
+
+	// 레벨 관련 함수들
+	void EarnExp(int _Exp);
 
 	// Tick
 	virtual void Tick() override;

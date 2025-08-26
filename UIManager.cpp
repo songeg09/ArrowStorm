@@ -14,13 +14,24 @@ namespace UIManager {
 	constexpr int UI_OFFSET_X = 1;
 	constexpr int UI_OFFSET_Y = BOARD_SIZE::BOARD_HEIGHT;
 
-	Position BOW_NAME(UI_OFFSET_X, UI_OFFSET_Y);
+	Position BOW_NAME_Text(UI_OFFSET_X, UI_OFFSET_Y);
+	Position BOW_NAME(UI_OFFSET_X + 3, UI_OFFSET_Y);
+
 	Position HP_BAR(UI_OFFSET_X, UI_OFFSET_Y+1);
 	Position MP_BAR(UI_OFFSET_X, UI_OFFSET_Y+2);
+
 	Position HP_POTION_ICON(UI_OFFSET_X + 25, UI_OFFSET_Y+1);
 	Position MP_POTION_ICON(UI_OFFSET_X + 25, UI_OFFSET_Y+2);
 	Position HP_POTION_NUM(UI_OFFSET_X + 26, UI_OFFSET_Y + 1);
 	Position MP_POTION_NUM(UI_OFFSET_X + 26, UI_OFFSET_Y + 2);
+
+	Position Level_Text(UI_OFFSET_X + 25, UI_OFFSET_Y);
+	Position Level_Num(UI_OFFSET_X + 28, UI_OFFSET_Y);
+	Position Exp_Text(UI_OFFSET_X + 32, UI_OFFSET_Y);
+	Position Exp_Num(UI_OFFSET_X + 35, UI_OFFSET_Y);
+
+	Position Skill_CoolTime_Text(UI_OFFSET_X + 12, UI_OFFSET_Y);
+	Position Skill_CollTime(UI_OFFSET_X + 20, UI_OFFSET_Y);
 
 	std::string GetUIIcon(UI_ICON _Icon)
 	{
@@ -48,7 +59,7 @@ namespace UIManager {
 	{
 		if (Player* player = GetPlayerPtr())
 		{
-			std::string Msg = "ÀåÂøµÈ È° : " + player->GetBow()->GetName();
+			std::string Msg = player->GetBow()->GetName();
 			DrawManager::DrawAtPos(BOW_NAME, Msg);
 		}
 	}
@@ -114,23 +125,58 @@ namespace UIManager {
 			DrawManager::DrawAtPos(MP_POTION_NUM, Msg);
 		}
 	}
-
+	
 	void DrawUI()
 	{
+		RED
+			DrawManager::DrawAtPos(HP_POTION_ICON, GetUIIcon(UI_ICON::POTION));
+		BLUE
+			DrawManager::DrawAtPos(MP_POTION_ICON, GetUIIcon(UI_ICON::POTION));
+		ORIGINAL
+			DrawManager::DrawAtPos(BOW_NAME_Text, "ÀåÂøµÈ È°: ");
+			DrawManager::DrawAtPos(Level_Text, "Level: ");
+			DrawManager::DrawAtPos(Exp_Text, "Exp: ");
+			DrawManager::DrawAtPos(Skill_CoolTime_Text, "Skill Cool Time:");
+
 		UpdateBowName();
 		UpdateHpBar();
 		UpdateMpBar();
-		DrawPotionIcons();
+		UpdateLevel();
+		UpdateExp();
 		UpdateHpPotions();
 		UpdateMpPotions();
 	}
 
-	void DrawPotionIcons()
-	{
-		RED
-		DrawManager::DrawAtPos(HP_POTION_ICON, GetUIIcon(UI_ICON::POTION));
 
-		BLUE
-		DrawManager::DrawAtPos(MP_POTION_ICON, GetUIIcon(UI_ICON::POTION));
+	void UpdateLevel()
+	{
+		if (Player* player = GetPlayerPtr())
+		{
+			ORIGINAL
+				DrawManager::DrawAtPos(Level_Num, Format02(player->GetLevel()));
+		}
+	}
+
+	void UpdateSkillCoolTime()
+	{
+		if (Player* player = GetPlayerPtr())
+		{
+			int CoolTime = player->GetBow()->GetSkillCoolTime();
+			if (CoolTime < 0) return;
+
+			std::string Msg = std::to_string(CoolTime / 10) + "." + std::to_string(CoolTime % 10);
+			ORIGINAL
+				DrawManager::DrawAtPos(Skill_CollTime, Msg);
+		}
+	}
+
+	void UpdateExp()
+	{
+		if (Player* player = GetPlayerPtr())
+		{
+			std::string Msg = std::to_string(player->GetExp()) + "/" + std::to_string(player->GetLevel() * 5);
+			ORIGINAL
+				DrawManager::DrawAtPos(Exp_Num, Msg);
+		}
 	}
 };

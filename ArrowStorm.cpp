@@ -5,6 +5,7 @@
 #include "Projectile.h"
 #include "Player.h"
 #include "Actor.h"
+#include "Monster.h"
 #include "Slime.h"
 #include "Skeleton.h"
 
@@ -78,6 +79,14 @@ bool ArrowStorm::LoadPlayerInfo()
 		load >> tmp1 >> tmp2;
 		player->SetHpPotion(tmp1);
 		player->SetMpPotion(tmp2);
+
+		// 레벨 로드
+		load >> tmp1;
+		player->SetLevel(tmp1);
+
+		// 경험치 로드
+		load >> tmp1;
+		player->SetExp(tmp1);
 	}
 
 	load.close();
@@ -114,6 +123,10 @@ void ArrowStorm::SavePlayerInfo()
 		save << player->GetHp() << " " << player->GetMp() << std::endl;
 		// 포션 수 저장
 		save << player->GetHpPotion() << " " << player->GetMpPotion() << std::endl;;
+		// 레벨 저장
+		save << player->GetLevel() << std::endl;
+		// 경험치 저장
+		save << player->GetExp() << std::endl;
 	}
 	save.close();
 }
@@ -176,6 +189,19 @@ void ArrowStorm::CollisionCheck()
 			{
 				// 데미지 적용
 				ApplyHit(HitIndex, (*it)->GetDamage());
+				
+				// 경험치 적용
+				if (HitIndex != 0 && m_CreatureArr[HitIndex]->GetHp() <= 0)
+				{
+					if (Player* player = dynamic_cast<Player*>((*it)->GetOwner()))
+					{
+						if (Monster* monster = dynamic_cast<Monster*>(m_CreatureArr[HitIndex].get()))
+						{
+							player->EarnExp(monster->GetExp());
+						}
+					}
+				}
+
 				it = m_ProjectileList.erase(it);
 			}
 			else

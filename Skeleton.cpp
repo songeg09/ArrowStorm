@@ -9,7 +9,9 @@ Skeleton::Skeleton(const Position _InitialPos)
 	m_MoveTimer->SetTimer(TIME::SKELETON_MOVE_SPEED, std::bind(&Skeleton::Wander, this));
 	m_AttackTimer->SetTimer(TIME::SKELETON_ATTACK_COOL, std::bind(&Skeleton::MeleeAttack, this));
 	m_MeleeDamage = SKELETON_MELEE_DAMAGE;
-	m_Bow = std::make_unique<Bow>(this);
+	m_Bow = std::make_unique<Bow>();
+	m_Bow->SetOwner(this);
+	m_Exp = MONSTER_EXP::SKELETON_EXP;
 }
 
 Skeleton::~Skeleton()

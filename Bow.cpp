@@ -8,9 +8,9 @@
 
 #include <memory>
 
-Bow::Bow(Creature* _Owner)
+Bow::Bow(BOW_TYPE _BowType, Creature* _Owner)
+	: m_BowType(_BowType), m_Owner(_Owner)
 {
-	m_Owner = _Owner;
 	m_AttackTimer = std::make_unique<Timer>();
 	m_AttackTimer->SetTimer(TIME::DEFAULT_ATTACK_COOL, std::bind(&Bow::Fire, this, std::ref(m_AmingDir)));
 	m_SkillTimer = std::make_unique<Timer>();
@@ -32,7 +32,7 @@ void Bow::Fire(const DIRECTION _AmingDir)
 {
 	Position InitialPos = m_Owner->GetCurrentPosition() + Directions[_AmingDir];
 	BOARD_OBJECT Object = GetArrowObject(_AmingDir);
-	ArrowStorm::GetInstance().GetProjectileList().emplace_back(std::make_unique<Projectile>(InitialPos, Object, _AmingDir));
+	ArrowStorm::GetInstance().GetProjectileList().emplace_back(std::make_unique<Projectile>(m_Owner,InitialPos, Object, _AmingDir));
 }
 
 void Bow::TrySkill(const DIRECTION _AmingDir)
@@ -51,4 +51,14 @@ void Bow::UseSkill(const DIRECTION _AmingDir)
 	Fire(DIRECTION::RIGHT);
 	Fire(DIRECTION::DOWN);
 	Fire(DIRECTION::LEFT);	
+}
+
+int Bow::GetSkillCoolTime()
+{
+	int CoolTime = m_SkillTimer->GetSecond();
+	int LastUsedTime = m_SkillTimer->GetOldTime();
+	int CurrentTime = clock();
+
+	int TimeLeft = (CoolTime - (CurrentTime - LastUsedTime)) / 100;
+	return TimeLeft;
 }
