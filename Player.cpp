@@ -240,10 +240,10 @@ void Player::LevelUp()
 	UIManager::UpdateMpBar();
 
 	// 5레벨 마다 공속 감소
-	if (m_Level % 1 == 0)
+	if (m_Level % 3 == 0)
 	{
 		// 임의로 두배 빠르게 만들어주기
-		SetAttackSpeed(m_AttackSpeed *= 0.5);
+		SetAttackSpeed(m_AttackSpeed *= 0.9);
 		UIManager::UpdateAttackSpeed();
 	}
 }
